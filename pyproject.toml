@@ -1,0 +1,28 @@
+[build-system]
+requires = [
+    "setuptools",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lib_henryk"
+version = "0.1"
+description="Henryk content creation and analysis"
+authors = [
+    {name = "Konrad Jelen <konrad.jelen@gmail.com>"},
+]
+license = {text = ""}
+
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools]
+include-package-data = true # default value
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests"]
+namespaces = true # default value is true
+
+# EOF
