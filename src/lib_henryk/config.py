@@ -1,0 +1,2 @@
+FILE_AUDIO_STATS_CSV = '../../data/processed/henryk_audio_stats.csv'
+DIR_WIADOMOSCI_DO_HENRYCZKA = '/mnt/onedrive/My Private/My documents/Other/Henryk/Alienacja rodzicielska materiały/Wiadomości do Henryczka'
