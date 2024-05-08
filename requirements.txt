@@ -7,4 +7,5 @@ coverage
 python-dotenv>=0.5.1
 pydub
 ffmpeg
-
+openai
+anthropic
