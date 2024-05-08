@@ -14,4 +14,3 @@ buffer = io.BytesIO()
 song_truncated.export(buffer, format='mp3')
 file_to_transcribe = 'sample.mp3'
 ```
-
