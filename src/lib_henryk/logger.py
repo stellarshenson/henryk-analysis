@@ -74,3 +74,74 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     if iteration == total: 
         print()
 
+def coloured_text(text, colour="white", bg_colour="normal", style="normal") -> str:
+    """
+    returns coloured text using Colorama
+
+    Parameters:
+        text (str): The text to be printed.
+        colour (str): The text colour. Default is white.
+        bg_colour (str): The background colour. Default is black.
+        style (str): The text style. Default is normal.
+
+    Returns:
+        None
+    """
+    # Map string inputs to Colorama constants
+    colour_mapping = {
+        "black": Fore.BLACK, "red": Fore.RED, "green": Fore.GREEN,
+        "yellow": Fore.YELLOW, "blue": Fore.BLUE, "magenta": Fore.MAGENTA,
+        "cyan": Fore.CYAN, "white": Fore.WHITE, "lightgreen": Fore.LIGHTGREEN_EX,
+        "lightred": Fore.LIGHTRED_EX, "lightblue": Fore.LIGHTBLUE_EX,
+    }
+    bg_colour_mapping = {
+        "black": Back.BLACK, "red": Back.RED, "green": Back.GREEN,
+        "yellow": Back.YELLOW, "blue": Back.BLUE, "magenta": Back.MAGENTA,
+        "cyan": Back.CYAN, "white": Back.WHITE, 'normal': Back.RESET
+    }
+    style_mapping = {
+        "normal": Style.NORMAL, "bright": Style.BRIGHT, "dim": Style.DIM,
+    }
+
+    # Get the Colorama constants for colour, background colour, and style
+    selected_colour = colour_mapping.get(colour.lower(), Fore.WHITE)
+    selected_bg_colour = bg_colour_mapping.get(bg_colour.lower(), Back.BLACK)
+    selected_style = style_mapping.get(style.lower(), Style.NORMAL)
+
+    # Construct the coloured text
+    coloured_text = f"{selected_style}{selected_bg_colour}{selected_colour}{text}{Style.RESET_ALL}"
+    return coloured_text
+
+
+def coloured_print(text, colour="white", bg_colour="normal", style="normal"):
+    """
+    Wrapper function for print that prints coloured text using Colorama.
+
+    Parameters:
+        text (str): The text to be printed.
+        colour (str): The text colour. Default is white.
+        bg_colour (str): The background colour. Default is black.
+        style (str): The text style. Default is normal.
+
+    Returns:
+        None
+    """
+    print(coloured_text(text, colour, bg_colour, style))
+
+
+class StopExecution(Exception):
+    """
+    by raising this exception you can quietly stop
+    notebook processing
+
+    Example:
+    >>> raise StopExecution
+    """
+    def _render_traceback_(self):
+        return []
+
+
+def exit_cell():
+    raise StopExecution('stopped')
+
+# EOF
