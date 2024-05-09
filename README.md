@@ -7,5 +7,5 @@ of his mother behaviour that I can submit to the court as evidence
 ## Components
 The following components of the analysis were developed
 
-- recordings - analysis of my recordings for Henry, that is their duration, frequency and other stats
-- visits - analysis of my meetings with Henry. Mainly the analysis of the probabilities of certain events such as Henry's sickness that conicidentally happend during my visits and other things
+- **recordings** - analysis of my recordings for Henry, that is their duration, frequency and other stats
+- **visits** - analysis of my meetings with Henry. Mainly the analysis of the probabilities of certain events such as Henry's sickness that conicidentally happend during my visits and other things
