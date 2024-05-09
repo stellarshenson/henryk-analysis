@@ -14,13 +14,25 @@ from lib_henryk.config import *
 
 
 def submit_transcriptions_goodtape( df: pd.DataFrame, webhooks_token_id, goodtape_api_key, path_recordings, start=0, stop=None, verbose=False ):        
-    # create new column if needed
+    # create new transcription_id column if needed
     if not 'transcription_id' in  df.columns.to_list():
         df['transcription_id'] = None
-        
+
+    # create new transcription_json column if needed
+    if not 'transcription_json' in  df.columns.to_list():
+        df['transcription_json'] = None
+
+    # create new transcription_txt column if needed
+    if not 'transcription_txt' in  df.columns.to_list():
+        df['transcription_txt'] = None
+    
     # set up callback
     token_id = webhooks_token_id
     callback_url = f'https://webhook.site/{token_id}'
+
+    # correct stop and start
+    start = start if (start >= 0) and (start < len(df)) else len(df)-1
+    stop if (stop > 0) and (stop <= len(df)) and (stop <= start) else len(df)
     
     # load just few records
     counter=0
@@ -28,9 +40,12 @@ def submit_transcriptions_goodtape( df: pd.DataFrame, webhooks_token_id, goodtap
         file_path = path_recordings + '/' + row['path']
         file_name = row['file']
         transcription_id = row['transcription_id']
+        file_name_json = row['transcription_json']
+        file_name_txt= row['transcription_txt']
     
-        # run transcription API if needed, only if transcription wasn't made already
-        if pd.isna(transcription_id) == True:
+        # run transcription API if needed, only if transcription wasn't done already
+        # we are only checking for json file, because transcription_id won't be needed anymore
+        if pd.isna(file_name_json) == True:
             file_name_max_length = 100
             file_name_truncated = file_name
             if len(file_name) > file_name_max_length:
@@ -169,9 +184,14 @@ def process_transcriptions_json_to_text(df, path_transcriptions_json, path_trans
     print(f'{counter} new transcriptions were processed, there are {len(df[df["transcription_txt"].notnull()])} transcriptions available')
 
 
-def cleanup_missing_transcriptions(df, path_transcriptions_json, path_transcriptions_txt):
+def get_cleaned_up_transcriptions(df, path_transcriptions_json, path_transcriptions_txt) -> pd.DataFrame:
     # find records to clean, we are probably waiting for a number of 
     # transcription responses - but the quota on webhooks.site might have been exceeded
+
+    # do not make changes on the original
+    df = df.copy()
+
+    # loop over records and check them
     counter=0
     for index, row in df.iterrows():
         file_name_text = row['transcription_txt']
@@ -188,7 +208,17 @@ def cleanup_missing_transcriptions(df, path_transcriptions_json, path_transcript
             df.loc[index, 'transcription_id'] = None
             df.loc[index, 'transcription_txt'] = None
             df.loc[index, 'transcription_json'] = None
-
+            
+    # drop transcription_id column, it isn't needed in the final file
+    df.drop('transcription_id', axis=1, inplace=True)
+    
     print(f'there are {counter} processed and valid transcriptions')
+
+    # if all transcriptions are done, print green message
+    if len(df) == counter:
+        coloured_print(f"*** all {len(df)} recordings were transcribed ***", colour='lightgreen')
+
+    # return cleaned dataframe
+    return df
 
 # EOF
