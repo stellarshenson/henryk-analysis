@@ -6,6 +6,7 @@ import io
 import json
 import math
 import docx
+import progress
 
 import subprocess
 
@@ -157,6 +158,8 @@ def process_transcriptions_json(
     # iterate over records and process files
     counter=0
     for index, row in df.iterrows():
+        progressBar(index, len(df), prefix=f'processing {len(df)} transcriptions')
+        
         file_name = row['file']
         file_name_without_ext = get_file_name_without_extension(file_name)
         file_name_json = row['transcription_json']
@@ -194,6 +197,7 @@ def process_transcriptions_json(
         # if to_doc hasn't been done already
         if to_doc and (not os.path.exists(path_doc)):
             doc = docx.Document(FILE_TRANSCRIPTION_TEMPLATE)
+            doc.add_heading(file_name_without_ext, 1)
             doc.add_paragraph(transcription_text)
             doc.save(path_doc)
             df.loc[index, 'transcription_doc'] = file_name_doc
@@ -205,6 +209,9 @@ def process_transcriptions_json(
         if processed: 
             if verbose: print(f'processed [{index}]: {file_name}')
             counter+=1
+
+    # finish progress bar
+    progressBar(1, 1, prefix=f'processing {len(df)} transcriptions', suffix='done.')
     
     # print message that we are done
     total_txt = len(df[df["transcription_txt"].notnull()])
@@ -212,7 +219,7 @@ def process_transcriptions_json(
     print(f'{counter} new transcriptions were processed, there are {total_txt} txt and {total_doc} doc transcriptions available')
 
 
-def get_cleaned_up_transcriptions(df, path_transcriptions_json, path_transcriptions_txt, path_transcriptions_doc) -> pd.DataFrame:
+def get_verified_transcriptions(df, path_transcriptions_json, path_transcriptions_txt, path_transcriptions_doc) -> pd.DataFrame:
     # find records to clean, we are probably waiting for a number of 
     # transcription responses - but the quota on webhooks.site might have been exceeded
 
@@ -222,6 +229,7 @@ def get_cleaned_up_transcriptions(df, path_transcriptions_json, path_transcripti
     # loop over records and check them
     counter=0
     for index, row in df.iterrows():
+        progressBar(index, len(df), prefix=f'verifying {len(df)} transcriptions')
         file_name_txt = row['transcription_txt']
         file_name_doc = row['transcription_doc']
         file_name_json = row['transcription_json']
@@ -256,7 +264,10 @@ def get_cleaned_up_transcriptions(df, path_transcriptions_json, path_transcripti
 
         # increment counter if all good
         if valid: counter+=1
-            
+
+    # finish progress bar
+    progressBar(1, 1, prefix=f'verifying {len(df)} transcriptions', suffix='done.')
+    
     # drop transcription_id column, it isn't needed in the final file
     df.drop('transcription_id', axis=1, inplace=True)
     print(f'there are {counter} processed and valid transcriptions')
