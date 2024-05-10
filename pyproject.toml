@@ -23,6 +23,7 @@ dependencies = [
     'matplotlib',
     'scikit-learn',
     'numpy',
+    'python-docx',
 ]
 
 [tool.setuptools]

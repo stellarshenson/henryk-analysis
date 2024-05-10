@@ -5,12 +5,14 @@ import shutil
 import io
 import json
 import math
+import docx
 
 import subprocess
 
 # local imports
 from lib_henryk.logger import *
 from lib_henryk.config import *
+from lib_henryk.utils import *
 
 
 def submit_transcriptions_goodtape( df: pd.DataFrame, webhooks_token_id, goodtape_api_key, path_recordings, start=0, stop=None, verbose=False ):        
@@ -137,54 +139,80 @@ def retrieve_responses_goodtape_via_webhooks(df, webhooks_token_id, path_transcr
     print(f'{counter} transcriptions were retrieved')
 
 
-def process_transcriptions_json_to_text(df, path_transcriptions_json, path_transcriptions_txt, verbose=False):
+def process_transcriptions_json(
+    df, 
+    path_transcriptions_json, 
+    path_transcriptions_txt, 
+    path_transcriptions_doc, 
+    to_txt=True, 
+    to_doc=True, 
+    verbose=False
+):
     # create new column if needed
-    if not 'transcription_txt' in  df.columns.to_list():
+    if (not 'transcription_txt' in  df.columns.to_list()):
         df['transcription_txt'] = None
+    if (not 'transcription_doc' in  df.columns.to_list()):
+        df['transcription_doc'] = None
     
     # iterate over records and process files
     counter=0
     for index, row in df.iterrows():
         file_name = row['file']
-        file_name_without_ext = '.'.join(row['file'].split('.')[:-1])
-        transcription_id = row['transcription_id']
+        file_name_without_ext = get_file_name_without_extension(file_name)
         file_name_json = row['transcription_json']
         path_json = f'{path_transcriptions_json}/{file_name_json}'
+
+        # doc and txt file names and paths
         file_name_txt = f'{file_name_without_ext}.txt'
+        file_name_doc = f'{file_name_without_ext}.docx'
         path_txt = f'{path_transcriptions_txt}/{file_name_txt}'
+        path_doc = f'{path_transcriptions_doc}/{file_name_doc}'
 
         # failover in case json is not available
         if pd.isna(file_name_json) or (os.path.exists(path_json) == False): 
-            continue        
-        
-        # skip if processed already
-        if os.path.exists(path_txt):
-            if verbose:
-                print(f'file [{index}]: {file_name_json} was already processed')
             continue
-        else:
-            counter+=1
-        
+    
         # open json file
-        json_content = json.load(open(path_json, 'r'))
-        transcription_text = json_content['content']['text']
-        
-        # write to the final destination
-        with open(path_txt, 'w') as file:
-            file.write(file_name_without_ext + '\n\n')
-            file.write(transcription_text.strip())
+        transcription_text = ''
+        with open(path_json, 'r') as file:
+            json_content = json.load(file)
+            transcription_text = json_content['content']['text']
             file.close()
+        
+        # if to_txt hasn't been done already
+        processed = False
+        if to_txt and (not os.path.exists(path_txt)):
+            with open(path_txt, 'w') as file:
+                file.write(file_name_without_ext + '\n\n')
+                file.write(transcription_text.strip())
+                file.close()    
+            df.loc[index, 'transcription_txt'] = file_name_txt
+            processed = True
+        elif to_txt and os.path.exists(path_txt):
+            if verbose: print(f'file [{index}]: {file_name_txt} was already processed')
 
-        # mark processing in the dataframe
-        if verbose:
-            print(f'processed [{index}]: {file_name_txt}')
-        df.loc[index, 'transcription_txt'] = file_name_txt
+        # if to_doc hasn't been done already
+        if to_doc and (not os.path.exists(path_doc)):
+            doc = docx.Document(FILE_TRANSCRIPTION_TEMPLATE)
+            doc.add_paragraph(transcription_text)
+            doc.save(path_doc)
+            df.loc[index, 'transcription_doc'] = file_name_doc
+            processed = True
+        elif to_doc and os.path.exists(path_doc):
+            if verbose: print(f'file [{index}]: {file_name_doc} was already processed')
+                
+        # add counter if processed 
+        if processed: 
+            if verbose: print(f'processed [{index}]: {file_name}')
+            counter+=1
     
     # print message that we are done
-    print(f'{counter} new transcriptions were processed, there are {len(df[df["transcription_txt"].notnull()])} transcriptions available')
+    total_txt = len(df[df["transcription_txt"].notnull()])
+    total_doc = len(df[df["transcription_doc"].notnull()])
+    print(f'{counter} new transcriptions were processed, there are {total_txt} txt and {total_doc} doc transcriptions available')
 
 
-def get_cleaned_up_transcriptions(df, path_transcriptions_json, path_transcriptions_txt) -> pd.DataFrame:
+def get_cleaned_up_transcriptions(df, path_transcriptions_json, path_transcriptions_txt, path_transcriptions_doc) -> pd.DataFrame:
     # find records to clean, we are probably waiting for a number of 
     # transcription responses - but the quota on webhooks.site might have been exceeded
 
@@ -194,24 +222,43 @@ def get_cleaned_up_transcriptions(df, path_transcriptions_json, path_transcripti
     # loop over records and check them
     counter=0
     for index, row in df.iterrows():
-        file_name_text = row['transcription_txt']
+        file_name_txt = row['transcription_txt']
+        file_name_doc = row['transcription_doc']
         file_name_json = row['transcription_json']
         path_json = f'{path_transcriptions_json}/{file_name_json}'
-        path_text = f'{path_transcriptions_txt}/{file_name_text}'
+        path_txt = f'{path_transcriptions_txt}/{file_name_txt}'
+        path_doc = f'{path_transcriptions_doc}/{file_name_doc}'
 
-        # check values and files
-        if (pd.isna(file_name_text) == False) and (pd.isna(file_name_json) == False) \
-        and (os.path.exists(path_json) == True) and (os.path.exists(path_text) == True):
-            counter+=1
-        # if record is invalid, clean up
-        else:
+        # initial condition
+        valid = True
+
+        # if json wasn't even retrieved, clean transcription_id,
+        # the transcription will need to be re-obtained
+        if pd.isna(file_name_json):
+            valid = False
             df.loc[index, 'transcription_id'] = None
-            df.loc[index, 'transcription_txt'] = None
-            df.loc[index, 'transcription_json'] = None
+        
+        # check jsons, clean json if file not present
+        if not pd.isna(file_name_json):
+            if not os.path.exists(path_json):
+                valid = False
+                df.loc[index, 'transcription_json'] = None
+
+        if not pd.isna(file_name_txt):
+            if not os.path.exists(path_txt):
+                valid = False
+                df.loc[index, 'transcription_txt'] = None
+
+        if not pd.isna(file_name_doc):
+            if not os.path.exists(path_doc):
+                valid = False
+                df.loc[index, 'transcription_doc'] = None
+
+        # increment counter if all good
+        if valid: counter+=1
             
     # drop transcription_id column, it isn't needed in the final file
     df.drop('transcription_id', axis=1, inplace=True)
-    
     print(f'there are {counter} processed and valid transcriptions')
 
     # if all transcriptions are done, print green message
