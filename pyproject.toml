@@ -19,7 +19,7 @@ dependencies = [
     'pydub',
     'pandas',
     'polars',
-    'ffmpeg',
+    'ffmpeg-binaries',
     'matplotlib',
     'scikit-learn',
     'numpy',
