@@ -1,0 +1,14 @@
+dependencies:
+  - ffmpeg
+  - pip
+
+  - pip:
+    - -e .
+    - click
+    - coverage
+    - python-dotenv>=0.5.1
+    - pydub
+    - openai
+  
+# EOF
+

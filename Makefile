@@ -133,9 +133,8 @@ install_no_dependencies:
 ## Install project and dependencies in the current environment
 install_all:
 	# install requirements
-	@pip install -r requirements.txt
+	@conda env update -f ./environment.yml
 	@echo "project deployment dependencies have been installed"
-	@pip install --editable .
 	@echo "you can now import '$(MODULE_NAME)' module in your notebooks and scripts"
 
 
