@@ -69,8 +69,12 @@ def get_recordings_info(path_recordings: str) -> pd.DataFrame:
         if _row != None:
             df.loc[len(df)] = _row
 
+    # sort and reindex
+    df = df.sort_values(by='date')
+    df = df.reset_index(drop=True)
+    
     # return dataframe
-    return df.sort_values(by='date')
+    return df 
 
 
 def get_file_info(path: str, path_recordings: str) -> dict:

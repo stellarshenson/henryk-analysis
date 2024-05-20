@@ -34,8 +34,8 @@ def submit_transcriptions_goodtape( df: pd.DataFrame, webhooks_token_id, goodtap
     callback_url = f'https://webhook.site/{token_id}'
 
     # correct stop and start
-    start = start if (start >= 0) and (start < len(df)) else len(df)-1
-    stop if (stop > 0) and (stop <= len(df)) and (stop <= start) else len(df)
+    start = start if (start is not None) and (start >= 0) and (start < len(df)) else 0
+    stop = stop if (stop is not None) and (stop > 0) and (stop <= len(df)) and (stop <= start) else len(df)
     
     # load just few records
     counter=0
