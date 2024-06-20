@@ -167,8 +167,3 @@ Example 3:
 }
 ```
 
-<<<<<<< HEAD
-Return just json, no additional content or acknowledgement
-
-=======
->>>>>>> 8119133 (added prompts)
