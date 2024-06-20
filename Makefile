@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3
+.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3 test
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -7,7 +7,7 @@
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
 PROFILE = default
-PROJECT_NAME = henryk_content_creation_and_analysis
+PROJECT_NAME = henryk-analysis
 MODULE_NAME = lib_henryk
 PYTHON_INTERPRETER = python3
 
@@ -35,16 +35,23 @@ data: requirements
 
 ## Delete all compiled Python files
 clean:
-	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
-	find . -type d -name "*.egg-info_" -delete
+	@echo "removing cache and compiled files"
+	@find . -type f -name "*.py[co]" -delete
+	@find . -type d -name "__pycache__" -delete
+	@rm -rf `find . -type d -name "*.egg-info"`
+	@echo "removing dist and build directory"
+	@rm -rf build dist
 	@echo 'uninstalling local library'
 	@pip uninstall -y $(MODULE_NAME)
-	rm -rf build dist
 
 ## Lint using flake8
 lint:
 	flake8 src
+
+## Run python tests
+test:
+	@echo "executing python tests"
+	pytest -v
 
 ## Upload Data to S3
 sync_data_to_s3:
@@ -68,7 +75,7 @@ create_environment:
 ifeq (True,$(HAS_CONDA))
 	@echo ">>> Detected conda, creating conda environment."
 	conda create -y --name $(PROJECT_NAME) python=$(PYTHON3_VERSION) ipykernel
-	conda run -n $(PROJECT_NAME) --no-capture-output pip install -r requirements.txt
+	conda env update -n $(PROJECT_NAME) --no-capture-output -f ./environment.yml
 	@echo ">>> New conda env created. Activate with:\nconda activate $(PROJECT_NAME)"
 else
 	$(PYTHON_INTERPRETER) -m pip install -q virtualenv virtualenvwrapper
@@ -139,7 +146,7 @@ install_all:
 
 
 ## Build package & install
-build:
+build: test
 	python -m build --wheel
 	@echo "installing project library: $(find ./dist -name '*.whl')"
 	@pip install `find ./dist -name '*.whl'`
