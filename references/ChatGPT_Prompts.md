@@ -1,12 +1,9 @@
+
 ## Recordings Classification Prompt
 
 You are a psychologist who analyses transcriptions for the court. 
 
-Attached or provided is a transcription of a recording from father to his 2.5y old son, who dad isn't able to see often. Father meets his son briefly, for just a short while every month or every two months. For various reasons. Can you please analyse the content of a dad's recordings transcritions and generate a classification json according to the schema. Dad will use the classification to subm
-- Dad's family: babusia Stenia z krakowa, dziadzius Slawek z krakowa, wujek Michal, ciocia Daniela, wujek Mikolaj, ciocia Marta, kuzyn Arturek, kuzyn Filipek, kuzynka Anastazja
-- Dad's friends: wujek Seweryn, ciocia Malgosia, kuzynka Hania, wujek Mungo, wujek Alex and some other uncles and aunts.
-- Mom's family: babusia/babcia Teresa z Dobronia. Often when mentioned 'babcia' in the transcription without specifying which babcia is it - father means this babcia.
-- Daycare aunts and uncles: ciocia Sylwia, ciocia Martyna, wujek Eryk, wujek Karol
+Attached or provided is a transcription of a recording from father to his 2.5y old son, who dad isn't able to see often. Father meets his son briefly, for just a short while every month or every two months. For various reasons. Can you please analyse the content of a dad's recordings transcritions and generate a classification json according to the schema. Dad will use the classification to submit it to the court and to allow analysis with the data analysis tools
 
 You will classify the transcription using the following json. The json has been provided with the helpful descriptions and instructions for each element.
 
@@ -16,6 +13,12 @@ Provide answer to this prompt as JSON only. No other commens and no acknowledgem
 it the summary and analysis to the court.
 
 Acknowledge the following facts:
+- Dad's family: babusia Stenia z krakowa, dziadzius Slawek z krakowa, wujek Michal, ciocia Daniela, wujek Mikolaj, ciocia Marta, kuzyn Arturek, kuzyn Filipek, kuzynka Anastazja
+- Dad's friends: wujek Seweryn, ciocia Malgosia, kuzynka Hania, wujek Mungo, wujek Alex and some other uncles and aunts.
+- Mom's family: babusia/babcia Teresa z Dobronia. Often when mentioned 'babcia' in the transcription without specifying which babcia is it - father means this babcia.
+- Daycare aunts and uncles: ciocia Sylwia, ciocia Martyna, wujek Eryk, wujek Karol
+
+
 ```json
 {
   "approach" : {
@@ -143,19 +146,50 @@ Example:
 
 ## Transcription Summary
 
-Summarize the attached recording from father to son, but create the summary in the form of a teaser that, with its tone, will encourage the child to listen to the whole thing. Keep the summary in a light tone and language friendly to a 3-year-old child. The entire summary should not exceed 160 words. Create the summary in Polish. DO not address the summary directly to Henry, make it more passive - just stating what is in the recording - like in the example. Produce the result as json as in the example below. Use 1st person in the summary i.e. "Opowiadam o ..."
+Summarize the attached recording from father to son, but create the summary in the form of a teaser that, with its tone, will encourage the child to listen to the whole thing. Keep the summary in a light tone and language friendly to a 3-year-old child.  
+
+Do's:
+- Use 1st person in the summary i.e. "Opowiadam o ..."
+- Create the summary in Polish.
+- The entire summary should not exceed 160 words.
+- Provide chain-of-thought as "justification" before you produce the "transcription_overview_dad_perspective"
+- Chain-of-thought should explain your reasoning vs. the instructions in the prompt
+
+Don't-s
+- Do not address son or anyone directly, make summary more passive, i.e. do not say "krzyczałem do ciebie" or "widziałem ciebie", those address son directly.
+- Do not provide too many details of the stories told
+- Do not say things like "kocham Cię" or "tęsknię za tobą" without specific context. They appear too often.
+
+Produce the result only as JSON code, do not produce any other content.
+
+Below is the json template:
+
+```json
+{
+    "justification": {
+        "tone_and_language": "...",
+        "passive_narration": "..."
+        "first_person_perspective": "...",
+        "encouraging_listening": "...",
+        "brevity": "..."
+    },
+    "summary": "..."
+}
+```
+
+Below are examples (without justification, but you must provide justification):
 
 Example 1:
 ```json
 {
-    "transcription_overview_dad_perspective": "W tym nagraniu opowiadam o dniu, kiedy widziałem swojego synka. Opowiadam, jak bardzo tęskniłem za nim i jak mocno chciałem go przytulić. Widzieliśmy się tylko na chwilkę, a obok byli policjanci, którzy pomogli nam się zobaczyć.  Mówię też o planach na przyszłość, że może następnym razem zobaczymy się na dłużej. Opowiadam, jak bardzo kocham swojego synka i że mama i tata robią wszystko, aby mógł spędzać czas z obojgiem rodziców. Wspominam również, jak spędzam czas z jego kuzynami i jak będziemy robić latawce. Obiecuję, że kiedy Henryczek będzie starszy, będziemy robić latawce razem i puszczać je na Błoniach Krakowskich. Na koniec, opowiadam o dinozaurach, które przypominają smoki. Mówię, jak dawno temu żyły te ogromne stworzenia i jak wyglądał wtedy świat. Wspominam różne rodzaje dinozaurów, ich wielkość i zwyczaje. Czytam bajkę o diplodokach, które przystanęły na polanie, aby odpocząć. Mam nadzieję, że te bajki spodobają się Henryczkowi, i obiecuję, że będziemy rysować i kolorować dinozaury razem."
+	"summary": "W tym nagraniu opowiadam o dniu, kiedy widziałem swojego synka. Opowiadam, jak bardzo tęskniłem za nim i jak mocno chciałem go przytulić. Widzieliśmy się tylko na chwilkę, a obok byli policjanci, którzy pomogli nam się zobaczyć.  Mówię też o planach na przyszłość, że może następnym razem zobaczymy się na dłużej. Opowiadam, jak bardzo kocham swojego synka i że mama i tata robią wszystko, aby mógł spędzać czas z obojgiem rodziców. Wspominam również, jak spędzam czas z jego kuzynami i jak będziemy robić latawce. Obiecuję, że kiedy Henryczek będzie starszy, będziemy robić latawce razem i puszczać je na Błoniach Krakowskich. Na koniec, opowiadam o dinozaurach, które przypominają smoki. Mówię, jak dawno temu żyły te ogromne stworzenia i jak wyglądał wtedy świat. Wspominam różne rodzaje dinozaurów, ich wielkość i zwyczaje. Czytam bajkę o diplodokach, które przystanęły na polanie, aby odpocząć. Mam nadzieję, że te bajki spodobają się Henryczkowi, i obiecuję, że będziemy rysować i kolorować dinozaury razem."
 }
 ```
 
 Example 2:
 ```json
 {
-    "transcription_overview_dad_perspective": "W tym nagraniu opowiadam o niezwykłym kamperze, czyli domu na kółkach, który mają babusia i dziadziuś Henryczka. Wyobraź sobie, że można nim jeździć wszędzie, a w środku jest wszystko, co w prawdziwym domu – łóżko, stolik, lampka i nawet toaleta! Opowiadam, jak z Henryczkiem będziemy mogli razem podróżować tym kamperem na Mazury, gdzie jest dużo jezior i łódek. Opowiadam też o tym, jak chciałbym by Henryczek zobaczył wielką jaskinię Smoczą Jamę pod zamkiem na Wawelu. Na końcu czytam synkowi bajeczkę o misiu Uszatku, który uczy się pływać dzięki rakowi.  Dużo ciekawych przygód, o których chętnie opowiadam!"
+    "summary": "W tym nagraniu opowiadam o niezwykłym kamperze, czyli domu na kółkach, który mają babusia i dziadziuś Henryczka. Wyobraź sobie, że można nim jeździć wszędzie, a w środku jest wszystko, co w prawdziwym domu – łóżko, stolik, lampka i nawet toaleta! Opowiadam, jak z Henryczkiem będziemy mogli razem podróżować tym kamperem na Mazury, gdzie jest dużo jezior i łódek. Opowiadam też o tym, jak chciałbym by Henryczek zobaczył wielką jaskinię Smoczą Jamę pod zamkiem na Wawelu. Na końcu czytam synkowi bajeczkę o misiu Uszatku, który uczy się pływać dzięki rakowi.  Dużo ciekawych przygód, o których chętnie opowiadam!"
 }
 ```
 
@@ -163,7 +197,13 @@ Example 3:
 
 ```json
 {
-    "transcription_overview_dad_perspective": "W tym nagraniu opowiadam o dniu pełnym podróży samochodem, który robi brum brum! Opowiadam o różnych samochodach, takich jak te z książeczki – osobowych, tirach, wozach strażackich i karetkach. Mówię też o tym, jak bardzo kocham i tęsknię za synkiem, i jak staram się, by móc spędzać więcej czasu razem. Na koniec czytam bajkę o misiu Uszatku, który spotyka pluszowego króliczka ukrytego pod szafą. Misio i jego przyjaciele zapraszają króliczka do stołu, gdzie jedzą razem pyszną brukselkę. Ta opowieść pełna jest przygód i radości!"
+    "justification": {
+        "tone_and_language": "Używam ciepłego i zachęcającego tonu oraz prostego języka, aby był przyjazny dla trzylatka.",
+        "passive_narration": "Unikam bezpośrednich zwrotów do dziecka, zamiast tego stosuję opisy w trzeciej osobie.",
+        "first_person_perspective": "Stosuję narrację w pierwszej osobie, aby wciągnąć dziecko w opowieść.",
+        "encouraging_listening": "Podkreślam ciekawe fragmenty i obietnicę zabawnych historii, aby zachęcić do słuchania.",
+        "brevity": "Podsumowanie jest krótkie, zwięzłe i obejmuje najważniejsze punkty bez nadmiaru szczegółów."
+    },
+    "summary": "W tym nagraniu opowiadam o dniu pełnym podróży, kiedy odwiedziłem Warszawę. Opowiadam o książce 'Zima na ulicy Czereśniowej' pełnej kolorowych obrazków, gdzie ludzie jeżdżą na saneczkach i noszą choinki. Jest tam wiele ciekawych postaci, jak śpiewający pan i grająca na skrzypcach pani. Opowiadam historię o babci, która znalazła choinkę, oraz czytam bajeczki o misiu Uszatku – jak króliczek pobrudził podłogę i jak ciasto próbowało uciec. To wszystko to wspaniałe opowieści, które czekają na odkrycie!"
 }
 ```
-

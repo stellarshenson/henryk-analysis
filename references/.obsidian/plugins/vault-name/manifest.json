@@ -1,0 +1,15 @@
+{
+	"id": "vault-name",
+	"name": "Vault Name",
+	"version": "0.1.0",
+	"minAppVersion": "1.6.0",
+	"description": "Display and customize the vault name (title) in the side navigation file explorer.",
+	"author": "@gapmiss",
+	"authorUrl": "https://github.com/gapmiss",
+	"fundingUrl": {
+		"Github Sponsors": "https://github.com/sponsors/gapmiss",
+		"Buy Me a Coffee": "https://buymeacoffee.com/gapmiss",
+		"Ko-Fi": "https://ko-fi.com/gapmiss"
+	},
+	"isDesktopOnly": true
+}

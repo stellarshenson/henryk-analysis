@@ -1,0 +1,18 @@
+{
+  "sticky": true,
+  "alignment": "flex-start",
+  "padding": "var(--size-2-2)",
+  "background": "var(--background-secondary)",
+  "border": "none",
+  "borderRadius": "var(--radius-m)",
+  "showIcon": false,
+  "icon": "No icon",
+  "iconSize": "var(--icon-m)",
+  "iconColor": "var(--nav-item-color)",
+  "iconRotate": "0deg",
+  "titleFontSize": "var(--font-ui-medium)",
+  "titleColor": "var(--nav-item-color)",
+  "titleFont": "var(--font-interface)",
+  "titleLetterSpacing": "normal",
+  "titleWeight": "var(--font-normal)"
+}

@@ -1,0 +1,44 @@
+{
+  "mobileToolbarCommands": [
+    "editor:insert-wikilink",
+    "editor:attach-file",
+    "editor:set-heading",
+    "editor:toggle-bold",
+    "editor:toggle-italics",
+    "editor:toggle-highlight",
+    "editor:insert-link",
+    "editor:toggle-bullet-list",
+    "editor:toggle-numbered-list",
+    "editor:toggle-checklist-status",
+    "editor:indent-list",
+    "editor:unindent-list",
+    "editor:undo",
+    "editor:redo",
+    "editor:insert-codeblock"
+  ],
+  "newFileLocation": "current",
+  "attachmentFolderPath": "./@attachments",
+  "showUnsupportedFiles": true,
+  "trashOption": "local",
+  "promptDelete": false,
+  "alwaysUpdateLinks": true,
+  "pdfExportSettings": {
+    "includeName": true,
+    "pageSize": "Letter",
+    "landscape": false,
+    "margin": "0",
+    "downscalePercent": 100
+  },
+  "useMarkdownLinks": true,
+  "showInlineTitle": true,
+  "foldHeading": false,
+  "spellcheck": false,
+  "readableLineLength": true,
+  "userIgnoreFilters": [
+    "*@attachments*",
+    "Delaval/VMS Predictive Maintenance/@attachments/"
+  ],
+  "defaultViewMode": "source",
+  "vimMode": false,
+  "newLinkFormat": "relative"
+}
