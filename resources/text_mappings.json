@@ -1,5 +1,9 @@
 {
-    "positive": "Positive Sentiment",
-    "negative": "Negative Sentiment",
-    "neutral": "Neutral Sentiment"
+    "Positive Sentiment": "Pozytywny",
+    "negative": "Negatywny",
+    "Neutral Sentiment": "Neutralny",
+    "sentimental": "Sentymentalny",
+    "rather-positive": "Raczej Pozytywny",
+    "classification.overall_sentiment": "Ogólny Ton Nagrania",
+    "Frequency": "Liczba Nagrań"
 }

@@ -26,6 +26,28 @@ def load_mappings(mapping_file):
         mappings = json.load(file)
     return mappings
 
+import pandas as pd
+import plotly.express as px
+import json
+
+def load_mappings(mapping_file):
+    """
+    Load mappings from a JSON file.
+
+    Parameters:
+    -----------
+    mapping_file : str
+        Path to the JSON file containing the mappings.
+
+    Returns:
+    --------
+    dict
+        The dictionary containing the mappings.
+    """
+    with open(mapping_file, 'r') as file:
+        mappings = json.load(file)
+    return mappings
+
 def plot_categorical_histogram(df, column, mapping_file=None, title=None, xlabel=None, ylabel='Frequency', palette='Viridis'):
     """
     Plots a histogram for a categorical column in the given DataFrame using Plotly.
@@ -57,9 +79,11 @@ def plot_categorical_histogram(df, column, mapping_file=None, title=None, xlabel
     # Apply mappings if available
     if mappings:
         df[column] = df[column].map(mappings).fillna(df[column])
+        xlabel = mappings.get(column, xlabel if xlabel else column)
+        ylabel = mappings.get('Frequency', ylabel)
 
     # Generate the plot
-    fig = px.histogram(df, x=column, color=column, title=title if title else column, color_discrete_sequence=px.colors.sequential.Viridis)
+    fig = px.histogram(df, x=column, color=column, title=title if title else column, color_discrete_sequence=px.colors.sequential.Viridis, text_auto=True)
 
     # Update layout for better visuals
     fig.update_layout(
@@ -87,23 +111,6 @@ def plot_categorical_histogram(df, column, mapping_file=None, title=None, xlabel
     fig.show()
 
 
-def load_mappings(mapping_file):
-    """
-    Load mappings from a JSON file.
-
-    Parameters:
-    -----------
-    mapping_file : str
-        Path to the JSON file containing the mappings.
-
-    Returns:
-    --------
-    dict
-        The dictionary containing the mappings.
-    """
-    with open(mapping_file, 'r') as file:
-        mappings = json.load(file)
-    return mappings
 
 
 # EOF
