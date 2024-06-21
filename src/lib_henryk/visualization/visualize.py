@@ -2,11 +2,10 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-import pandas as pd
 import pandas as pd
 import plotly.express as px
 import json
+from wordcloud import WordCloud
 
 def load_mappings(mapping_file):
     """
@@ -22,35 +21,62 @@ def load_mappings(mapping_file):
     dict
         The dictionary containing the mappings.
     """
-    with open(mapping_file, 'r') as file:
-        mappings = json.load(file)
-    return mappings
+    try:
+        with open(mapping_file, 'r') as file:
+            mappings = json.load(file)
+        return mappings
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON from file {mapping_file}: {e}")
+        return {}
 
-import pandas as pd
-import plotly.express as px
-import json
 
-def load_mappings(mapping_file):
+def create_reverse_mapping(mappings):
     """
-    Load mappings from a JSON file.
+    Create a reverse mapping from specific categories to broader categories.
 
     Parameters:
     -----------
+    mappings : dict
+        The dictionary containing the broader to specific categories mappings.
+
+    Returns:
+    --------
+    dict
+        The dictionary containing the specific to broader categories mappings.
+    """
+    reverse_mapping = {}
+    for broad_category, specific_categories in mappings.items():
+        for specific_category in specific_categories:
+            reverse_mapping[specific_category] = broad_category
+    return reverse_mapping
+
+def map_categorical_values(df, column, mapping_file):
+    """
+    Map categorical values to broader categories.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        The DataFrame containing the data.
+    column : str
+        The name of the column to map.
     mapping_file : str
         Path to the JSON file containing the mappings.
 
     Returns:
     --------
-    dict
-        The dictionary containing the mappings.
+    pd.DataFrame
+        The DataFrame with the mapped column.
     """
-    with open(mapping_file, 'r') as file:
-        mappings = json.load(file)
-    return mappings
+    mappings = load_mappings(mapping_file)
+    reverse_mapping = create_reverse_mapping(mappings)
+    df[column] = df[column].map(reverse_mapping).fillna(df[column])
+    return df
 
-def plot_categorical_histogram(df, column, mapping_file=None, title=None, xlabel=None, ylabel='Frequency', palette='Viridis'):
+
+def plot_categorical_histogram(df, column, mapping_file=None, title=None, xlabel=None, ylabel='Frequency', figsize=(14, 6), palette='coolwarm'):
     """
-    Plots a histogram for a categorical column in the given DataFrame using Plotly.
+    Plots a histogram for a categorical column in the given DataFrame using Matplotlib and Seaborn.
 
     Parameters:
     -----------
@@ -66,8 +92,10 @@ def plot_categorical_histogram(df, column, mapping_file=None, title=None, xlabel
         The label for the x-axis. Defaults to the column name.
     ylabel : str, optional
         The label for the y-axis. Defaults to 'Frequency'.
+    figsize : tuple, optional
+        The size of the figure. Defaults to (12, 8).
     palette : str, optional
-        The color palette to use for the plot. Defaults to 'Viridis'.
+        The color palette to use for the plot. Defaults to 'coolwarm'.
 
     Returns:
     --------
@@ -79,38 +107,146 @@ def plot_categorical_histogram(df, column, mapping_file=None, title=None, xlabel
     # Apply mappings if available
     if mappings:
         df[column] = df[column].map(mappings).fillna(df[column])
+        mapped_title = mappings.get(column, column)
         xlabel = mappings.get(column, xlabel if xlabel else column)
         ylabel = mappings.get('Frequency', ylabel)
+    else:
+        mapped_title = column
 
-    # Generate the plot
-    fig = px.histogram(df, x=column, color=column, title=title if title else column, color_discrete_sequence=px.colors.sequential.Viridis, text_auto=True)
+    # Use provided title or mapped title
+    plot_title = title if title else mapped_title
 
-    # Update layout for better visuals
-    fig.update_layout(
-        xaxis_title=xlabel if xlabel else column,
-        yaxis_title=ylabel,
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-        font=dict(color='black'),
-        title_font=dict(size=20, color='black', family='Arial'),
-        xaxis=dict(showgrid=True, gridwidth=0.5, gridcolor='lightgray'),
-        yaxis=dict(showgrid=True, gridwidth=0.5, gridcolor='lightgray'),
-        autosize=True,
-        width=1200,
-        height=800,
-    )
+    # Set up the figure
+    plt.figure(figsize=figsize)
+    plt.rcParams['axes.facecolor'] = 'white'
+    plt.rcParams['figure.facecolor'] = 'white'
 
-    # Show percentages on the bars
-    total = len(df)
-    for trace in fig.data:
-        if trace.y is not None:
-            trace.text = [f'{y} ({100 * y / total:.1f}%)' for y in trace.y]
-            trace.textposition = 'outside'
+    # Plot the histogram
+    ax = sns.countplot(data=df, y=column, palette=palette, order=df[column].value_counts().index)
+
+    # Add percentages
+    total = len(df[column])
+    for p in ax.patches:
+        # percentage = '{:.1f}%'.format(100 * p.get_width() / total)
+        percentage = f'{100 * p.get_width() / total:.1f}%\n{p.get_width():.0f}'
+        x = p.get_width() + 0.02 * total  # Adjust to prevent overlapping with the border
+        y = p.get_y() + p.get_height() / 2
+        ax.annotate(percentage, (x, y), ha='left', va='center', fontsize=12)
+
+    # Set plot labels and title
+    plt.title(plot_title, fontsize=18, pad=20)
+    plt.xlabel(ylabel, fontsize=14)  # Correct the xlabel
+    plt.ylabel(xlabel, fontsize=14)  # Correct the ylabel
+
+    # Adjust x-axis limit for padding
+    max_width = max([p.get_width() for p in ax.patches])
+    plt.xlim(0, max_width * 1.25)
+    
+    # Add grid for better readability
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
+    
+    # Display the plot
+    plt.show()
+
+def generate_word_cloud(df, column, title=None, width=800, height=400, background_color='white'):
+    """
+    Generate a word cloud image from the comma-separated values in the specified column.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        The DataFrame containing the data.
+    column : str
+        The name of the column with comma-separated values.
+    title : str, optional
+        The title of the word cloud plot. Defaults to None.
+    width : int, optional
+        The width of the word cloud image. Defaults to 800.
+    height : int, optional
+        The height of the word cloud image. Defaults to 400.
+    background_color : str, optional
+        The background color of the word cloud image. Defaults to 'white'.
+
+    Returns:
+    --------
+    None
+    """
+    # Concatenate all the values in the column into a single string
+    all_topics = ','.join(df[column].dropna()).replace(' ', '_')
+
+    # Generate the word cloud
+    wordcloud = WordCloud(width=width, height=height, background_color=background_color).generate(all_topics)
+
+    # Plot the word cloud
+    plt.figure(figsize=(24, 16))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    if title:
+        plt.title(title, fontsize=16)
+    plt.show()
+
+def plot_binary_columns_histogram(df, columns, mapping_file, title='Histogram of Binary Columns', figsize=(12, 8), palette='coolwarm'):
+    """
+    Plot a histogram for binary columns showing the number of recordings where the value is 1.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        The DataFrame containing the data.
+    columns : list
+        The list of column names to plot.
+    mapping_file : str
+        Path to the JSON file containing the column name mappings.
+    title : str, optional
+        The title of the plot. Defaults to 'Histogram of Binary Columns'.
+    figsize : tuple, optional
+        The size of the figure. Defaults to (12, 8).
+    palette : str, optional
+        The color palette to use for the plot. Defaults to 'coolwarm'.
+
+    Returns:
+    --------
+    None
+    """
+    # Load mappings
+    mappings = load_mappings(mapping_file)
+
+    # Calculate the counts and percentages
+    counts = {col: df[col].sum() for col in columns}
+    total_recordings = len(df)
+    percentages = {col: (df[col].mean() * 100) for col in columns}
+    mapped_labels = [mappings.get(col, col) for col in columns]
+
+    # Prepare the data for plotting
+    plot_data = pd.DataFrame({
+        'Column': mapped_labels,
+        'Count': [counts[col] for col in columns],
+        'Percentage': [percentages[col] for col in columns]
+    })
+
+    # Set up the figure
+    plt.figure(figsize=figsize)
+    plt.rcParams['axes.facecolor'] = 'white'
+    plt.rcParams['figure.facecolor'] = 'white'
+
+    # Plot the histogram
+    ax = sns.barplot(x='Count', y='Column', data=plot_data, palette=palette)
+
+    # Add counts and percentages on the bars
+    for index, row in plot_data.iterrows():
+        ax.text(row['Count'] + 0.5, index, f'{row["Percentage"]:.1f}%\n{row["Count"]:.0f}', color='black', va="center", fontsize=12)
+        # ax.text(row['Count'] + 0.5, index, f'{row["Count"]} ({row["Percentage"]:.1f}%)', color='black', va="center", fontsize=12)
+
+    # Set plot labels and title
+    plt.title(title, fontsize=18, pad=20)
+    plt.xlabel('Number of Recordings', fontsize=14)
+    plt.ylabel('')
+
+    # Add grid
+    plt.grid(axis='x', linestyle='--', alpha=0.7)
 
     # Display the plot
-    fig.show()
-
-
+    plt.show()
 
 
 # EOF

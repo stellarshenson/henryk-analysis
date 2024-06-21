@@ -24,13 +24,13 @@ dependencies = [
     'scikit-learn',
     'numpy',
     'python-docx',
-     'python-dotenv',
-     'openai',
-     'markdown-it-py',
-     'mdit_plain',
-     'json_repair',
-     'names_generator',
-     'plotly',   
+    'python-dotenv',
+    'openai',
+    'markdown-it-py',
+    'mdit_plain',
+    'json_repair',
+    'names_generator',
+    'wordcloud',
 ]
 
 [tool.setuptools]

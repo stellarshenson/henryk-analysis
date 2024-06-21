@@ -21,7 +21,7 @@ for c in columns:
 - **classification.mother_family_mentions** (int64): string, categorical
 - **classification.mother_mentions_sentiment** (object):  string, categorical
 - **classification.mother_family_mentions_sentiment** (object):  string, categorical
-- **classification.fairy_tale** (int64): string, unique
+- **classification.fairy_tale** (int64): 1 or 0
 - **classification.fairy_tale_theme** (object):  string, categorical
 - **classification.motto_sentence** (object):  string, unique
 - **classification.dads_tale_overview** (object):  string, unique
