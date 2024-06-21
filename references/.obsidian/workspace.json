@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "ChatGPT_Prompts.md",
+                "file": "Statystyki Nagrań Taty Dla Henryka.md",
                 "mode": "source",
                 "source": false
               }
@@ -93,7 +93,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "ChatGPT_Prompts.md",
+                "file": "Statystyki Nagrań Taty Dla Henryka.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -110,7 +110,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "ChatGPT_Prompts.md",
+                "file": "Statystyki Nagrań Taty Dla Henryka.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -133,7 +133,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "ChatGPT_Prompts.md"
+                "file": "Statystyki Nagrań Taty Dla Henryka.md"
               }
             }
           }
@@ -156,9 +156,23 @@
   },
   "active": "77a68c8fea7b9ab1",
   "lastOpenFiles": [
-    "Template.md",
+    "@attachments/download (8).png",
+    "@attachments/download (9).png",
+    "@attachments/Pasted image 20240621223159.png",
+    "@attachments/download (2).png",
+    "@attachments/download (3).png",
+    "@attachments/download (5).png",
+    "@attachments/download (10).png",
     "ChatGPT_Prompts.md",
-    "data science/@attachments/Pasted image 20240620180932.png",
+    "@attachments/download (4.md",
+    "Statystyki Nagrań Taty Dla Henryka.md",
+    "@attachments/download (4).png",
+    "@attachments/download.png",
+    "@attachments/download (1).png",
+    "@attachments/download (6).png",
+    "@attachments",
+    "Example Classification.md",
+    "Template.md",
     "breakdowns_ml_report_2024-05-15.xlsx",
     "~$VMSPRED Demo IC Meeting 2024-05-15.tmp",
     "data science/VMS Breakdown Detection Analysis.md",
@@ -168,15 +182,6 @@
     "breakdown-detection/New Breakdown Logs.md",
     "breakdown-detection/FRM Milking Vacuum Anomalies.md",
     "data science/VMS Pred AutoEncoder Experiments.md",
-    "data science/@attachments/Pasted image 20240417132112.png",
-    "data science/@attachments/Pasted image 20240417132105.png",
-    "data science/@attachments/Pasted image 20240417115658.png",
-    "data science/@attachments/Pasted image 20240417115631.png",
-    "data science/@attachments/Pasted image 20240417115536.png",
-    "data science/@attachments/Pasted image 20240417104332.png",
-    "data science/@attachments/Pasted image 20240417104319.png",
-    "data science/@attachments/Pasted image 20240417055420.png",
-    "data science/@attachments/Pasted image 20240417055412.png",
     "data science/Untitled.md",
     "data science/@attachments",
     "vpm library/vpm.data.data_engineering.md",
@@ -197,11 +202,6 @@
     "vpm library/vpm.model.preprocess_data.md",
     "vpm library/vpm library.md",
     "vpm library",
-    "breakdown-detection/resources/features_and_alarms.xlsx",
-    "predictive maintenance/VMS Self-test augmentation.md",
-    "@attachments/@attachments.md",
-    "@archive/@archive.md",
-    "Delaval/VMS Predictive Maintenance/Time Series Forecasting with CNN.md",
     "Untitled.canvas"
   ]
 }
