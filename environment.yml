@@ -9,5 +9,8 @@ dependencies:
     - python-dotenv
     - pydub
     - openai
+    - markdown-it-py
+    - mdit_plain
+    - json_repair
   
 # EOF
