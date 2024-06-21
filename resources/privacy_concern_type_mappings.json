@@ -1,0 +1,20 @@
+{
+    "Brak": [
+        "None", "nan"
+    ],
+    "Miejsce lub Adres": [
+        "location", "address"
+    ],
+    "Firma": [
+        "company_name" 
+    ],
+    "Raczej Negatywny": [
+        "rather-negative"
+    ],
+    "Dane Osobowe": [
+        "last_name"
+    ],
+    "Relacje Rodzinne": [
+        "address,family_relationships"
+    ]
+}

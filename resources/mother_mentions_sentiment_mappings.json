@@ -1,0 +1,17 @@
+{
+    "Raczej Pozytywny": [
+        "Raczej Pozytywny"
+    ],
+    "Pozytywny": [
+        "positive"
+    ],
+    "Neutralny": [
+        "neutral" 
+    ],
+    "Raczej Negatywny": [
+        "rather-negative"
+    ],
+    "Brak": [
+        "", "none"
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "Czuły": [
+        "affectionate", "caring", "busy but affectionate", "longing", "busy but affectionate", "warm", "thoughtful"
+    ],
+    "Pozytywny": [
+        "enthusiastic", "hopeful", "positive", "happy", "cheerful", "joyful", "motivational", "pedagogical", "affectionate and optimistic"
+    ],
+    "Refleksyjny": [
+        "reflective","contemplative", "nostalgic", "sentimental", "melancholic"
+    ],
+    "Neutralny": [
+        "neutral", "nervous and sentimental", "touched"
+    ],
+    "Zabawny": [
+        "playful"
+    ]
+}

@@ -1,0 +1,78 @@
+{
+    "Rodzina": [
+        "family_activities", "weekend_activities", "family", "family bonding", "family interactions",
+        "family gatherings", "family plans", "family traits", "family day", "family events",
+        "family and health", "family_connections", "family_event", "family_gatherings", "family_reunion",
+        "family birthday celebration", "family birthday celebration", "family_health", "family_plans",
+        "family_reunion", "family and health", "family_gatherings", "fatherhood",  "reunion", "time apart and daycare",
+        "family activities"
+    ],
+    "Praca": [
+        "work", "work_and_love", "work and family events", "work and preparation", "working from home",
+        "work and travel", "work and communication updates", "work and family memories", "work and future plans",
+        "work and bonding", "work_schedule", "father's work", "planned meetings", "work_and_love", "work and preparation", "work and travel",
+        "work and communication updates", "work and bonding", "presentations", "meeting", "updates", "conference"
+    ],
+    "Zdrowie": [
+        "health", "healthy eating", "therapy", "health and innovation", "family_health", "illness",
+        "therapy"
+    ],
+    "Edukacja": [
+        "education", "learning", "learning and play", "preschool", "preschool_activity", "school meetings",
+        "daycare", "perseverance", "diversity", "programming", "nationality", 
+        "perseverance", "dairy farming", "directions", "principles",
+        "coffee", "achievements", "nationality", "business", "culture", "communication", "cheese", "time", "maps",
+        "planning", "preparation", "preparations", "astronomy", "geography", "daycare activities", "travels"
+        
+    ],
+    "Przygoda": [
+        "adventures", "adventure", "desert_experience", "space exploration", "travel", "travelling",
+        "holiday adventure", "dinosaur park visit", "travel and play area", "trip", "camping", "mountains", 
+        "outdoor activities"
+    ],
+    "Codzienne życie": [
+        "daily life", "daily reflections", "daily activities", "daily routines", "daily routine",
+        "daily life activities", "daily_life", "daily_activities", "daily routine and future plans",
+        "daily_updates", "recent events", "daily routine and future plans", "home maintenance", "business",
+        "food", "cinema"
+    ],
+    "Święta i specjalne dni": [
+        "Day_of_the_Child", "Christmas preparations", "holiday greetings", "holidays", "holiday wishes",
+        "christmas", "new year", "easter traditions", "spring", "seasonal activities", "Halloween",
+        "independence_day", "valentine's day", "special days", "Women's Day", "lany poniedziałek",
+        "Pi Day", "nationality", "special days", "independence_day",  "new year reflections", "special days",
+        "gifts", "children_day", "holiday wishes", "birthdays", "easter", "birthday", "gifting","children's day"
+    ],
+    "Technologia": [
+        "technology", "AI", "AI technology", "artificial intelligence", "artificial_intelligence",
+        "3D printing", "innovation", "repairing items", "artificial_intelligence", "car_issue", 
+        "artificial_intelligence", "servers", "photos", "car repair"
+    ],
+    "Zabawa": [
+        "board games", "reading", "playroom", "games", "music", "kite making", "learning and play",
+        "learning and play", "dragons", "scooters"
+    ],
+    "Podróże": [
+        "visiting friends", "upcoming visits", "future plans", "future meetings", "plans", "visits",
+        "visit", "planned meetings", "future plans", "upcoming visit", "missed_meeting", "brief_meeting",
+        "Japanese culture", "desert_experience", "castle", "aviation", "travel and daily life"
+    ],
+    "Przyroda i Zwierzęta": [
+        "nature", "seasons", "weather", "winter", "spring", "winter activities", "environmental awareness", "stars and planets",
+        "environment", "snow", "spring", "farm", "animals"
+    ],
+    "Zajęcia": [
+        "gardening", "cleaning", "activities", "cleaning and baking", "home maintenance", "hobbies", "painting",
+        "archery", "archery competition", "personal activities", "personal_activities", "picture book"
+    ],
+    "Relacje": [
+        "interactions", "bonding", "family bonding", "social_interaction", "family connections", "friendship",
+        "future_events", "future_plans", "longing", "home", "home", "bond",
+        "work and family events","work and family memories", "work and future plans", "friendship",
+        "planned meetings", "social_interaction", "missed_meeting", "connection", "care", "friends", "daycare experiences",
+        "upcoming_visits", "quality_time", "anticipation", "memories", "brief meeting"
+    ],
+    "Nieokreślone": [
+        ""
+    ]
+}
