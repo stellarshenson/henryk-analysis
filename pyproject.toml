@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lib_henryk"
-version = "0.1"
+version = "0.3"
 description="Henryk content creation and analysis"
 authors = [
     {name = "Konrad Jelen <konrad.jelen@gmail.com>"},

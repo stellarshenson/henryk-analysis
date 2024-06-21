@@ -291,7 +291,7 @@ def get_verified_transcriptions(df_transcriptions_log, df_transcriptions) -> pd.
     # return cleaned dataframe
     return df_transcriptions_log
 
-def generate_transciptions_df_from_json_files(path_transcriptions_json: str = DIR_TRANSCRIPTIONS_JSON) -> pd.DataFrame:
+def generate_transciptions_df_from_json_files(path_transcriptions_json: str) -> pd.DataFrame:
     files_json = glob(f'{path_transcriptions_json}/**/*.json', recursive=True)
     # files_json = [os.path.basename(f) for f in files_json]
 

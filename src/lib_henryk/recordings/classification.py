@@ -1,6 +1,5 @@
 import os
 import openai
-import os
 import pandas as pd
 import json
 import time
@@ -222,7 +221,7 @@ class Transcription_Classifier():
         
         # if df_transcriptions_classifications is provided, set it as current
         if df_transcriptions_classifications is not None and self.__in_progress == False:
-            self.df_transcriptions_classifications = df_transcriptions_classification.reset_index(drop=True).copy()
+            self.df_transcriptions_classifications = df_transcriptions_classifications.reset_index(drop=True).copy()
             
             # requested vs completed stats
             stats = self.__get_completed_vs_requested_stats(df_transcriptions, self.df_transcriptions_classifications)
