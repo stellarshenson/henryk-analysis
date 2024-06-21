@@ -9,7 +9,7 @@ Technical notes: use 1 for True, 0 for False. For elemenets that are not applica
 Acknowledge the following facts:
 - Dad's family: babusia Stenia z krakowa, dziadzius Slawek z krakowa, wujek Michal, ciocia Daniela, wujek Mikolaj, ciocia Marta, kuzyn Arturek, kuzyn Filipek, kuzynka Anastazja
 - Dad's friends: wujek Seweryn, ciocia Malgosia, kuzynka Hania, wujek Mungo, wujek Alex and some other uncles and aunts.
-- Mom's family: babusia/babcia Teresa z Dobronia. Often when mentioned 'babcia' in the transcription without specifying which babcia is it - father means this babcia.
+- Mom's family: babusia/babcia Teresa z Dobronia. Often when mentioned 'babcia' in the transcription without specific person, it means babcia Teresa. But babcia accompanied by father is father's family. I.e. "babusia od strony tatusia" is babcia from father's family. Pay attention to those details.
 - Daycare aunts and uncles: ciocia Sylwia, ciocia Martyna, wujek Eryk, wujek Karol
 
 Provide answer to this prompt as JSON only. No other commens and no acknowledgement. Always remember about classification_approach, justification and classification.
@@ -182,7 +182,7 @@ Example 2:
       "dad_love": "The father frequently expresses his love for his son explicitly throughout the recording.",
       "dad_longing": "The father explicitly mentions that he misses his son multiple times.",
       "mother_mentions": "There is a mention of Henryczek's mother in the context of the system the father is building.",
-      "mother_family_mentions": "There are no mentions of the mother’s family in the transcription.",
+      "mother_family_mentions": "There are no mentions of the mother’s family in the transcription. There was mention of babcia 'babusia od strony tatusia' but that was father's family and therefore must be ignored.",
       "mother_mentions_sentiment": "The father's tone when mentioning the mother is neutral.",
       "mother_family_mentions_sentiment": "Not applicable as the mother's family is not mentioned.",
       "fairy_tale": "The father reads a fairy tale, continuing the story of 'Winnie the Pooh and the building of Eeyore's house'.",
