@@ -231,7 +231,7 @@ class Transcription_Classifier():
             
             # requested vs completed stats
             stats = self.__get_completed_vs_requested_stats(df_transcriptions, self.df_transcriptions_classifications)
-            logger.info(f'found {stats["num_completed"]} ({stats["num_requested_completed"]}) existing classifications, those transcriptions will be ignored')
+            logger.info(f'found {stats["num_completed"]} ({stats["num_requested_completed"]} from current request) existing classifications, those will not be processed.')
         elif df_transcriptions_classifications is not None and self.__in_progress == True:
             logger.warning(f'unable to provide initial classification dataset, classification is in progress')
 
@@ -539,6 +539,81 @@ class Transcription_Classifier():
         text = df_with_json.iloc[iloc][column_name]
         text_json = json.loads(text)
         return text_json
-        
+
+    @staticmethod
+    def flatten_json(json_obj, sep='.') -> dict:
+        """
+        Flattens a nested json dictionary.
+    
+        Parameters:
+        -----------
+        json_obj : dict
+            The JSON object to flatten.
+        sep : str
+            The separator to use for nested keys.
+    
+        Returns:
+        --------
+        dict
+            A flattened dictionary.
+        """
+        def flatten(x, name=''):
+            if type(x) is dict:
+                for a in x:
+                    flatten(x[a], name + a + sep)
+            elif type(x) is list:
+                if len(x) == 0:
+                    out[name[:-1]] = None
+                else:
+                    out[name[:-1]] = ','.join(map(str, x))
+            else:
+                out[name[:-1]] = x
+    
+        out = {}
+        flatten(json_obj)
+        return out
+
+    @staticmethod
+    def process_dataframe_json(df, json_column='content', sep='.') -> pd.DataFrame:
+        """
+        Processes the DataFrame to extract JSON strings into separate columns.
+    
+        Parameters:
+        -----------
+        df : pd.DataFrame
+            The DataFrame containing the JSON strings.
+        json_column : str
+            The column name that contains the JSON strings.
+        sep : str
+            The separator to use for nested keys.
+    
+        Returns:
+        --------
+        pd.DataFrame
+            A new DataFrame with flattened JSON columns.
+        """
+        all_flattened = []
+
+        for i, row in df.iterrows():
+            json_data = json.loads(row[json_column])
+            flattened = Transcription_Classifier.flatten_json(json_data, sep)
+            all_flattened.append(flattened)
+    
+        flattened_df = pd.DataFrame(all_flattened)
+    
+        # Attempt to convert each column to numeric types if possible
+        for col in flattened_df.columns:
+            try:
+                flattened_df[col] = pd.to_numeric(flattened_df[col])
+            except:
+                pass    
+            
+        # Convert any remaining object types to string
+        for col in flattened_df.select_dtypes(include=['object']).columns:
+            flattened_df[col] = flattened_df[col].astype(str)
+    
+        result_df = pd.concat([df.drop(columns=[json_column]), flattened_df], axis=1)
+        return result_df
+
             
 # EOF

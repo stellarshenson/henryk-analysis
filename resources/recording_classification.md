@@ -239,7 +239,7 @@ Example 2:
   }
 }
 
-Negative Example 1: father family (babusia, dziadzius) are mentioned in the context of a father
+Negative Example 1: father family (babusia, dziadzius) are mentioned in the context of a father and misclassified as mothers_family_mention. Justification element provides all-wrong justification: "There are mentions of the mother’s family, specifically babusia and dziadziuś."
 
 ```json
 {

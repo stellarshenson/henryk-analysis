@@ -13,5 +13,6 @@ dependencies:
     - mdit_plain
     - json_repair
     - names_generator
+    - plotly
   
 # EOF

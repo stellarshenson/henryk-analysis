@@ -42,7 +42,7 @@ def sort_df_by_date_inferred_from_name( df: pd.DataFrame, drop_date:bool=True ) 
     series_date = df['name'].str.extract('^.+ (\d+-\d+-\d+) .+$')[0] # extract regex group [0]
     df['date'] = series_date # attach date to dataframe
     df = df.sort_values(by='date') # sort by date
-    df.drop('date', axis=1, inplace=True) # drop unnecessary column
+    if drop_date == True: df.drop('date', axis=1, inplace=True) # drop unnecessary column
     df.reset_index(inplace=True, drop=True) # reset indexing after sorting
     return df
 
