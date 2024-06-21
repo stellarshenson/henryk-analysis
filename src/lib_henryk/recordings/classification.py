@@ -431,7 +431,7 @@ class Transcription_Classifier():
         logger.debug(f"writng intermediate result to {self.temp_df_transcriptions_classifications_parquet}, it has now {len(self.df_transcriptions_classifications)} entries")
         self.df_transcriptions_classifications.to_parquet(self.temp_df_transcriptions_classifications_parquet)    
     
-    def save_classification_parquet(self, path:str = FILE_TRANSCRIPTIONS_CLASSIFICATION_PARQUET, override:bool=False):
+    def save_classification_parquet(self, path:str = FILE_TRANSCRIPTIONS_CLASSIFICATIONS_PARQUET, override:bool=False):
         """
         Saves the classification results to a parquet file.
 
