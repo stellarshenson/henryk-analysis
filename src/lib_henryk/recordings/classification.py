@@ -315,7 +315,7 @@ class Transcription_Classifier():
         if stats["num_requested_completed"] == stats["num_requested"]:
             if stats["num_completed"] > stats["num_requested"]:
                 logger.info(f'more ({stats["num_completed"]}) classifications than requested, classifier was executed before on different dataset ')
-            logger.info(coloured_text(f'*** all {stats["num_requested"]} requested transcriptions classifications were completed ***', 'lightgreen'))
+            logger.info(coloured_text(f'*** all {stats["num_requested"]} requested transcriptions classifications were completed ***', 'green'))
         else:
             logger.info(f'there are still {stats["num_remaining"]} missing requested classifications')
 
