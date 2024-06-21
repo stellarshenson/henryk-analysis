@@ -9,6 +9,7 @@ import pathlib
 from markdown_it import MarkdownIt
 from mdit_plain.renderer import RendererPlain
 from json_repair import repair_json
+from names_generator import generate_name
 
 from lib_henryk.config import *
 from lib_henryk.logger import *
@@ -118,7 +119,9 @@ class Transcription_Classifier():
             })
 
         # temp file to save results just in case - openai is expensive
-        self.temp_df_transcriptions_classifications_parquet = "/tmp/temp_df_transcriptions_classifications.parquet"
+        # every time this will be a different name - to make sure one invocation
+        # doesn't accidently overwrite previous results. clever, ha? lost 20 bucks this way...
+        self.temp_dataset_file_prefix = f"/tmp/temp_"
         
         # assistant (will be provided later)
         self.assistant = None
@@ -215,9 +218,12 @@ class Transcription_Classifier():
         Exception:
             If classification cannot be completed after the specified number of retries.
         """
-
+        # generate new temp file name
+        self.temp_df_transcriptions_classifications_parquet = f"{self.temp_dataset_file_prefix}{generate_name()}.parquet"
+        
         # disclaimer
         logger.info(f'intermediate classification results will be written to {self.temp_df_transcriptions_classifications_parquet}')
+
         
         # if df_transcriptions_classifications is provided, set it as current
         if df_transcriptions_classifications is not None and self.__in_progress == False:
@@ -264,7 +270,7 @@ class Transcription_Classifier():
                 if verbose == True: 
                     logger.info(f'COOLDOWN, iteration [{i}]')
                 else:
-                    progressBar(i, len(df_transcriptions), prefix=progress_bar_prefix, suffix=f'{"*** COOLDOWN ***":64}',length=40)
+                    progressBar(i, len(df_transcriptions), prefix=progress_bar_prefix, suffix=f'{"*** COOLDOWN ***":72}',length=40)
                 time.sleep(cooldown_seconds) # cool down for a few seconds
                 self.client.beta.threads.delete(self.thread.id) # delete previous thread
                 self.thread = self.client.beta.threads.create() # start new thread, in new retry new thread will be used
@@ -454,7 +460,7 @@ class Transcription_Classifier():
                     logger.error('new file will not be written, use "override" option to ignore')
                     return
             else:
-                logger.info(f'new file will be replacing old one (old has {len(df_old)} records vs new {len(self.df_transcriptions_classifications)})')
+                logger.info(f'old file will be overwritten by a new one (old has {len(df_old)} records vs new {len(self.df_transcriptions_classifications)})')
 
         # if not exited, just write the file
         self.df_transcriptions_classifications.to_parquet(path)
@@ -485,7 +491,54 @@ class Transcription_Classifier():
             return None
 
 
-        def get_classifications(self) -> pd.DataFrame:
-            return self.df_transcriptions_classifications
+    def get_classifications(self) -> pd.DataFrame:
+        return self.df_transcriptions_classifications
+
+    
+    @staticmethod
+    def json_to_markdown(json_string):
+        """
+        Converts a JSON string into a flattened markdown file where each element is a heading
+        and its value is a paragraph.
+    
+        Parameters:
+        -----------
+        json_string : str
+            JSON string to be converted to markdown format.
+    
+        Returns:
+        --------
+        str
+            Flattened markdown string.
+        """
+        data = json.loads(json_string)
+        markdown_list = []
+    
+        def add_to_markdown(data, level=1):
+            for key, value in data.items():
+                if isinstance(value, dict):
+                    markdown_list.append(f"{'#' * level} {key}")
+                    add_to_markdown(value, level + 1)
+                elif isinstance(value, list):
+                    markdown_list.append(f"{'#' * level} {key}")
+                    for item in value:
+                        markdown_list.append(f"- {item}")
+                else:
+                    markdown_list.append(f"{'#' * level} {key}\n\n{value}\n")
+    
+        add_to_markdown(data)
+        return "\n".join(markdown_list)
+
+    @staticmethod
+    def get_json_from_parquet(path_parquet_with_json:str, column_name:str, iloc:int) -> dict:
+        df = pd.read_parquet(path_parquet_with_json)
+        return Transcription_Classifier.get_json_from_df(df, column_name, iloc)
+    
+    @staticmethod
+    def get_json_from_df(df_with_json: pd.DataFrame, column_name:str, iloc:int) -> dict:
+        text = df_with_json.iloc[iloc][column_name]
+        text_json = json.loads(text)
+        return text_json
+        
             
 # EOF
