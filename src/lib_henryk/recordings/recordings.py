@@ -34,9 +34,17 @@ def get_recordings_names_df(path_recordings: str=DIR_RECORDINGS) -> pd.DataFrame
         "file": filenames_list,
         "name": names_list,
     })
-
     return df
 
+def sort_df_by_date_inferred_from_name( df: pd.DataFrame, drop_date:bool=True ) -> pd.DataFrame:
+    # make sure that files are ordered in their natural temporal order (from name)
+    df = df.reset_index(drop=True) # change index from name to ordinal
+    series_date = df['name'].str.extract('^.+ (\d+-\d+-\d+) .+$')[0] # extract regex group [0]
+    df['date'] = series_date # attach date to dataframe
+    df = df.sort_values(by='date') # sort by date
+    df.drop('date', axis=1, inplace=True) # drop unnecessary column
+    df.reset_index(inplace=True, drop=True) # reset indexing after sorting
+    return df
 
 def get_recordings_info(path_recordings: str) -> pd.DataFrame:
     # load patsh to all audio files from wiadomości do Henryczka

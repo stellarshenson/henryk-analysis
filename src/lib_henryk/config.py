@@ -10,3 +10,11 @@ DIR_TRANSCRIPTIONS_TXT = '../../data/processed/transcriptions_txt'
 DIR_TRANSCRIPTIONS_DOC = '../../data/processed/transcriptions_doc'
 DIR_TRANSCRIPTIONS_JSON = '../../data/processed/transcriptions_json'
 DIR_TRANSCRIPTIONS = '../../data/processed/transcriptions'
+DIR_FIGURES = '../../reports/recordings'
+
+
+# ai
+FILE_PROMPT_RECORDING_CLASSIFICATION = '../../resources/recording_classification.md'
+FILE_PROMPT_RECORDING_SUMMARY = '../../resources/recording_summary.md'
+FILE_TRANSCRIPTIONS_CLASSIFICATION_PARQUET = '../../data/processed/henryk_transcriptions_classification.parquet'
+# EOF

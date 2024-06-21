@@ -52,12 +52,7 @@ def get_df_transcriptions_log(df_transcriptions: pd.DataFrame = None, path_recor
         df_transcriptions_log.update(df_transcriptions, join='left', overwrite=True)
 
     # make sure that files are ordered in their natural temporal order (from name)
-    df_transcriptions_log = df_transcriptions_log.reset_index() # change index from name to ordinal
-    series_date = df_transcriptions_log['name'].str.extract('^.+ (\d+-\d+-\d+) .+$')[0] # extract regex group [0]
-    df_transcriptions_log['date'] = series_date # attach date to dataframe
-    df_transcriptions_log = df_transcriptions_log.sort_values(by='date') # sort by date
-    df_transcriptions_log.drop('date', axis=1, inplace=True) # drop unnecessary column
-    df_transcriptions_log.reset_index(drop=True, inplace=True) # reset indexing after sorting
+    df_transcriptions_log = recordings.sort_df_by_date_inferred_from_name(df_transcriptions_log)
     
     # reset index back to original and return
     return df_transcriptions_log
@@ -69,11 +64,7 @@ def get_df_transcriptions(transcriptions_parquet_path=FILE_TRANSCRIPTIONS_PARQUE
         df_transcriptions = pd.read_parquet(transcriptions_parquet_path)
 
         # make sure transcriptions are ordered by date
-        series_date = df_transcriptions['name'].str.extract('^.+ (\d+-\d+-\d+) .+$')[0] # extract regex group [0]
-        df_transcriptions['date'] = series_date # attach date to dataframe
-        df_transcriptions = df_transcriptions.sort_values(by='date') # sort by date
-        df_transcriptions.drop('date', axis=1, inplace=True) # drop date, no longer needed
-        df_transcriptions.reset_index(drop=True, inplace=True) # reset indexing after sorting
+        df_transcriptions = recordings.sort_df_by_date_inferred_from_name(df_transcriptions)
     else:
         df_transcriptions = pd.DataFrame( {
         'name': [], 
