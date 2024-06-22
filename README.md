@@ -1,5 +1,5 @@
 # Henryk Analysis
-Primary purpose for this project is to build a plaform that will allow my recordings to reach my son, who is alienated from me by his mother, over many channels - and one day he would see how much legacy and love is waiting for him. 
+Primary purpose for this project is to build a plaform that will allow my audio recordings and other content to reach my alienated son, over many channels - and one day he would see how much legacy and love is waiting for him. 
 
 I am a loving father of a 3y old Henry and my son is being alienated from me for more than 2.5 years. I am doing everything in my power to maintain the connection to my son despite the situation. This results in a huge number of audio recordings for him and also this data science and automation project.
 
