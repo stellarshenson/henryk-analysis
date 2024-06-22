@@ -1,24 +1,19 @@
 # Henryk Analysis
 Primary purpose for this project is to build a plaform that will allow my recordings
-to reach my son over many channels - and one day he would see how much legacy and love
-is waiting for him. 
+to reach my son, who is alienated from me by his mother, over many channels - and one day he would see how much legacy and love is waiting for him. 
 
 This project serves also a therapeutic role for me - while waiting
-for the court system to find their own backside, I have to deal with the ever-agressive
-patterns of Parental Alienation. But his is nothing. I can deal with it. I have a therapist
-and a circle of friends who support me no matter what. But my son has only his mother.
+for the court system to find their own backside, I have to deal with the ever-agressive patterns of Parental Alienation. But his is nothing. I can deal with it. I have a therapist and a circle of friends who support me no matter what. But my son has only his mother.
 And it is his mother that is taking away from him the love, support and closenes of a loving parent.
-I cannot imagine what he must be going through. He is only 3y old, but the separation and
-ever present hatred combined with almost obsessive fear - must have taken a toll on this young one.
+I cannot imagine what he must be going through. He is only 3y old, but the separation and ever present hatred combined with obsessive effory to isolate him from his father - must have taken a toll on this young one.
 
-My heart bleeds at the slightes mention or thought of this. And then ... I sit and build.
-Build my life. Build my career. Build great technologies. For the hope that one day I 
+My heart bleeds at the slightest mention or thought of this. And then ... I sit and build.
+I build my life. Build my career. Build great technologies. build this project. For the hope that one day I 
 will be able to share this with him. And maybe, just maybe, I will see him smile some day.
 
-This project focuses on over 500+ recordings that I have prepared for my son - and continue to do so.
-In those recordings I am telling him the stories. Stories of my life, his family here, his peers who
-have never had a chance to meet him. And places he has never been able to visit - places so wonderful, that
-my heard cheers on the sligtes thought that we may yet share those moments sometime in the future.
+This project focuses on over 500+ audio recordings that I have recorded for my son - and continue to do so. Those recordings were and are my attempt to connect to my son an let him at least hear my voice. 
+
+In those recordings I am telling him the stories. Stories from my life, his family here, friends and things - like animals, phenomena, stars, nature and more. With the hope that one day he may doscover it all and take on a journey to learn about his father. 
 
 Those recordings are processed, information is extracted and will be delivered to different channels - that being
 text, that being videos and stories, that may one day reach my sone despite the ever present dome of fear and hatred.
