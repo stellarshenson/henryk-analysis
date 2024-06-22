@@ -47,7 +47,7 @@ Recordings and transcriptions are not publically available yet. They are encrypt
 Feel free to play with the datasets available in the `data/processed`, specifically the classification datasets. Super interesting. You will like it. 
 
 ## Installation
-- You need conda based environment to run this. you can use a prebuilt environment available as docker-compose project: [stellars-jupyterlab-ds](https://github.com/stellarshenson/stellars-jupyterlab-ds) that I have created an my entire data science team uses it in my company for work.
-- you need to execute 'make install_all' to install all dependencies from the environment file and the library
+- You need conda based environment to run this. you can use a prebuilt environment available as docker-compose project: [stellars-jupyterlab-ds](https://github.com/stellarshenson/stellars-jupyterlab-ds) that I have created an my entire data science team uses it in my company for work. my project makes use of free miniforge with conda-forge repository.
+- you need to execute `make install_all` to install all dependencies from the environment file and the library
 
 feel free to contact me if you need any help
