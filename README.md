@@ -28,7 +28,7 @@ framework for my court case - and a pile of evidence that no one will be able to
 public allows me to claim transparency and share with everyone the tools, methods, methodology and the craft that
 I did use to make this everything happen.
 
-![](./.res/father_project_for_son.webp)
+![](./.res/father_project_for_son3.WEBP)
 
 I can only hope that
 statistical analysis of the data available to me would reveal patterns
