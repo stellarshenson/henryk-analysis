@@ -10,7 +10,7 @@ DIR_FIGURES = '../../reports/recordings'
 
 
 # ai
-FILE_PROMPT_RECORDING_CLASSIFICATION = '../../resources/recording_classification.md'
+FILE_PROMPT_RECORDING_CLASSIFICATION = '../../resources/prompt_recording_classification.md'
 FILE_PROMPT_RECORDING_SUMMARY = '../../resources/recording_summary.md'
 FILE_TRANSCRIPTIONS_CLASSIFICATIONS_PARQUET = '../../data/processed/henryk_transcriptions_classifications.parquet'
 FILE_TRANSCRIPTIONS_CLASSIFICATIONS_STATS_PARQUET = '../../data/processed/henryk_transcriptions_classifications_stats.parquet'

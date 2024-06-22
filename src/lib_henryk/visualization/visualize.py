@@ -74,6 +74,27 @@ def map_categorical_values(df, column, mapping_file):
     return df
 
 
+def translate_words(text, mappings):
+    """
+    Translate words in a text string using the provided mappings.
+
+    Parameters:
+    -----------
+    text : str
+        The text string containing words to translate.
+    mappings : dict
+        The dictionary containing the word mappings.
+
+    Returns:
+    --------
+    str
+        The translated text string.
+    """
+    words = text.split(',')
+    translated_words = [mappings.get(word.strip(), word) for word in words]
+    return ' '.join(translated_words)
+
+
 def plot_categorical_histogram(df, column, mapping_file=None, title=None, xlabel=None, ylabel='Frequency', figsize=(14, 6), palette='coolwarm'):
     """
     Plots a histogram for a categorical column in the given DataFrame using Matplotlib and Seaborn.
@@ -148,7 +169,8 @@ def plot_categorical_histogram(df, column, mapping_file=None, title=None, xlabel
     # Display the plot
     plt.show()
 
-def generate_word_cloud(df, column, title=None, width=800, height=400, background_color='white'):
+
+def generate_word_cloud(df, column, mapping_file=None, title=None, figsize=(14, 6), background_color='white'):
     """
     Generate a word cloud image from the comma-separated values in the specified column.
 
@@ -158,12 +180,12 @@ def generate_word_cloud(df, column, title=None, width=800, height=400, backgroun
         The DataFrame containing the data.
     column : str
         The name of the column with comma-separated values.
+    mapping_file : str, optional
+        Path to the JSON file containing the mappings. Defaults to None.
     title : str, optional
         The title of the word cloud plot. Defaults to None.
-    width : int, optional
-        The width of the word cloud image. Defaults to 800.
-    height : int, optional
-        The height of the word cloud image. Defaults to 400.
+    figsize : tuple, optional
+        The size of the figure (width, height) in inches. Defaults to (10, 5).
     background_color : str, optional
         The background color of the word cloud image. Defaults to 'white'.
 
@@ -171,14 +193,20 @@ def generate_word_cloud(df, column, title=None, width=800, height=400, backgroun
     --------
     None
     """
+    # Load mappings if provided
+    mappings = load_mappings(mapping_file) if mapping_file else {}
+
     # Concatenate all the values in the column into a single string
-    all_topics = ','.join(df[column].dropna()).replace(' ', '_')
+    all_topics = ','.join(df[column].dropna())
+
+    # Translate the words using the mappings
+    translated_topics = translate_words(all_topics, mappings)
 
     # Generate the word cloud
-    wordcloud = WordCloud(width=width, height=height, background_color=background_color).generate(all_topics)
+    wordcloud = WordCloud(width=figsize[0]*100, height=figsize[1]*100, background_color=background_color).generate(translated_topics)
 
     # Plot the word cloud
-    plt.figure(figsize=(24, 16))
+    plt.figure(figsize=figsize)
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
     if title:

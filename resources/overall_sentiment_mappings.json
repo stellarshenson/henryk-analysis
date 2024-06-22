@@ -1,12 +1,12 @@
 {
     "Pozytywny": [
-        "Pozytywny"
+        "Pozytywny", "positive"
     ],
     "Raczej Pozytywny": [
         "rather-positive"
     ],
     "Neutralny": [
-        "Neutralny" 
+        "Neutralny", "neutral"
     ],
     "Sentymentalny": [
         "sentimental"
