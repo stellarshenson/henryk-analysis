@@ -8,7 +8,7 @@ I am a loving father of a 3y old Henry and my son is being alienated from me for
 This project serves also a therapeutic role for me - while waiting
 for the court system to find their own backside, I have to deal with the ever-agressive patterns of Parental Alienation. But his is nothing. I can deal with it. I have a therapist and a circle of friends who support me no matter what. But my son has only his mother.
 And it is his mother that is taking away from him the love, support and closenes of a loving parent.
-I cannot imagine what he must be going through. He is only 3y old, but the separation and ever present hatred combined with obsessive effory to isolate him from his father - must have taken a toll on this young one.
+I cannot imagine what he must be going through. He is only 3y old, but the separation and ever present hatred combined with obsessive efforts to isolate him from his father - must have taken a toll on this young one.
 
 ![](./.res/father_and_son_alienated.webp)
 
