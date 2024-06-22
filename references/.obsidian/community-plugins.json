@@ -7,6 +7,7 @@
   "iconoir-icons",
   "obsidian-link-embed",
   "file-explorer-plus",
+  "copy-url-in-preview",
   "automatic-table-of-contents",
   "obsidian-auto-link-title",
   "number-headings-obsidian",
@@ -19,6 +20,7 @@
   "obsidian-footnotes",
   "recent-files-obsidian",
   "notes-dater",
-  "vault-name",
-  "obsidian-image-caption"
+  "obsidian-image-caption",
+  "obsidian-image-toolkit",
+  "vault-name"
 ]

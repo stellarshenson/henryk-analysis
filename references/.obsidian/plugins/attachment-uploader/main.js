@@ -93,7 +93,7 @@ var localeMap = {
 };
 var locale = localeMap[import_obsidian.moment.locale()];
 function t(str) {
-  return (locale == null ? void 0 : locale[str]) || en_default[str];
+  return locale && locale[str] || en_default[str];
 }
 
 // src/main.ts
@@ -112,9 +112,13 @@ var DEFAULT_SETTINGS = {
 var AttachmentUploader = class extends import_obsidian2.Plugin {
   async onload() {
     await this.loadSettings();
-    this.addRibbonIcon("upload", t("Upload attachments"), (evt) => {
-      this.uploadEditorAttachment();
-    });
+    this.addRibbonIcon(
+      "upload",
+      t("Upload attachments"),
+      (evt) => {
+        this.uploadEditorAttachment();
+      }
+    );
     this.addCommand({
       id: "upload-editor-attachments",
       name: "Upload editor attachments",
@@ -135,11 +139,18 @@ var AttachmentUploader = class extends import_obsidian2.Plugin {
       );
       attachments.forEach(async (attachment) => {
         var _a, _b;
-        const sourceFile = this.app.vault.getAbstractFileByPath(attachment.inVaultPath);
-        const uploadResult = await this.uploadServe(attachment.inSystemPath);
+        const sourceFile = this.app.vault.getAbstractFileByPath(
+          attachment.inVaultPath
+        );
+        const uploadResult = await this.uploadServe(
+          attachment.inSystemPath
+        );
         if (uploadResult.success) {
           (_b = activeEditor == null ? void 0 : activeEditor.editor) == null ? void 0 : _b.setValue(
-            (_a = activeEditor == null ? void 0 : activeEditor.editor) == null ? void 0 : _a.getValue().replace(attachment.source, `![${attachment.alt}](${uploadResult.url})`)
+            (_a = activeEditor == null ? void 0 : activeEditor.editor) == null ? void 0 : _a.getValue().replace(
+              attachment.source,
+              `![${attachment.alt}](${uploadResult.url})`
+            )
           );
           if (this.settings.isDeleteSourceFile && sourceFile) {
             this.app.vault.delete(sourceFile);
@@ -155,7 +166,9 @@ var AttachmentUploader = class extends import_obsidian2.Plugin {
           new import_obsidian2.Notice(
             `${t("Upload failed:")}${attachment.inVaultPath}
 
-${t("Error message:")}
+${t(
+              "Error message:"
+            )}
 ${uploadResult.errorMessage}`
           );
         }
@@ -165,7 +178,7 @@ ${uploadResult.errorMessage}`
   /**
    * 获取编辑器中的附件信息
    *
-   * @param markdownFile - Markdown 文件信息对象
+   * @param markdownFile - Markdown文件信息对象
    * @returns 附件数组
    */
   getEditorAttachments(markdownFile) {
@@ -181,18 +194,20 @@ ${uploadResult.errorMessage}`
         const alt = (_b2 = match.match(/\[(.*?)\]/)) == null ? void 0 : _b2[1];
         if (attSourcePath) {
           const file = (0, import_path.parse)((0, import_obsidian2.normalizePath)(decodeURI(attSourcePath)));
-          const searchFile = this.app.vault.getFiles().find((f) => f.name === file.name + file.ext.toLowerCase());
+          const searchFile = this.app.vault.getFiles().find(
+            (f) => f.name === file.name + file.ext.toLowerCase()
+          );
           const attachment = {
             source: match,
             alt: alt ? alt : file.name,
-            // 如果有指定 alt 文本，则使用指定的 alt 文本，否则使用文件名称作为 alt 文本
+            // 如果有指定alt文本，则使用指定的alt文本，否则使用文件名称作为alt文本
             basename: file.base,
             name: file.name,
             ext: file.ext,
             existenceState: attSourcePath.startsWith("http") ? "network" : searchFile ? "local" : "missing",
             // 图片链接未找到
             inVaultPath: searchFile ? searchFile == null ? void 0 : searchFile.path : (0, import_obsidian2.normalizePath)(attSourcePath),
-            // 在 Vault 中找到对应的文件获取其 Vault 路径，否则为绝为原附件路径/图片网络链接
+            // 在Vault中找到对应的文件获取其Vault路径，否则为绝为原附件路径/图片网络链接
             inSystemPath: searchFile ? encodeURI((0, import_path.join)(vaultSystemPath, searchFile == null ? void 0 : searchFile.path)) : encodeURI((0, import_obsidian2.normalizePath)(attSourcePath))
           };
           if (this.settings.uploadFileFormat.split("\n").includes(attachment.ext.toLowerCase()) && // 检查文件扩展名是否在允许上传的文件格式中
@@ -204,7 +219,7 @@ ${uploadResult.errorMessage}`
     }
     return attachments;
   }
-  /** 上传命令执行后从 shell 输出中提取上传后的链接
+  /** 上传命令执行后从shell输出中提取上传后的链接
    *
    * @param path  要上传的文件在系统内的路径
    */
@@ -215,25 +230,28 @@ ${uploadResult.errorMessage}`
       const { stdout } = await execPromise(command);
       const urlMatch = stdout.match(/\s+(https?:\/\/\S+)/);
       if (urlMatch) {
-        const decodeUrl = decodeURIComponent(urlMatch[1]);
         return {
           success: true,
-          url: decodeUrl
+          url: urlMatch[1]
+        };
+      } else {
+        return {
+          success: false,
+          errorMessage: stdout
         };
       }
-      return {
-        success: false,
-        errorMessage: stdout
-      };
     } catch (err) {
-      const error = err;
-      console.error(`err: ${error}`);
-      new import_obsidian2.Notice(error.message.toString());
+      console.error(`err: ${err}`);
+      new import_obsidian2.Notice(err.message.toString());
       throw err;
     }
   }
   async loadSettings() {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    this.settings = Object.assign(
+      {},
+      DEFAULT_SETTINGS,
+      await this.loadData()
+    );
   }
   async saveSettings() {
     await this.saveData(this.settings);
@@ -267,10 +285,14 @@ var SettingTab = class extends import_obsidian2.PluginSettingTab {
         "The command is executed using the exec method of child_process. %s indicates the path of the file to be uploaded, reserve it. Extract the uploaded link from the shell output after execution,"
       )}\u2018urlMatch = stdout.match(/s+(https?:/ / S +) /)\u2019`
     ).addTextArea((textArea) => {
-      textArea.setValue(uploadCommandDict[this.plugin.settings.uploadService]).onChange(async (value) => {
+      textArea.setValue(
+        uploadCommandDict[this.plugin.settings.uploadService]
+      ).onChange(async (value) => {
         this.plugin.settings.uploadCommand = value;
         await this.plugin.saveSettings();
-      }).setDisabled(this.plugin.settings.uploadService !== "custom");
+      }).setDisabled(
+        this.plugin.settings.uploadService !== "custom"
+      );
       textArea.inputEl.style.height = "80px";
     });
     new import_obsidian2.Setting(containerEl).setName(t("Test file path")).addText((text) => {
@@ -284,16 +306,18 @@ var SettingTab = class extends import_obsidian2.PluginSettingTab {
             new import_obsidian2.Notice(t("Enter the test file path"));
             return;
           }
-          const uploadResult = await this.plugin.uploadServe(this.plugin.settings.testFilePath);
-          new import_obsidian2.Notice(uploadResult.success ? t("Upload successful") : t("Upload failed") + uploadResult.errorMessage);
+          const uploadResult = await this.plugin.uploadServe(
+            this.plugin.settings.testFilePath
+          );
+          new import_obsidian2.Notice(
+            uploadResult.success ? t("Upload successful") : t("Upload failed") + uploadResult.errorMessage
+          );
         });
       });
     });
     containerEl.createEl("h2", { text: t("Upload rules") });
     new import_obsidian2.Setting(containerEl).setName(t("Attachment format to be uploaded")).setDesc(
-      t(
-        "The file in the configuration format will be uploaded when the command is executed and the original address will be replaced with the network address. The format will be separated by carriage returns."
-      )
+      t("The file in the configuration format will be uploaded when the command is executed and the original address will be replaced with the network address. The format will be separated by carriage returns.")
     ).addTextArea((textArea) => {
       textArea.setValue(this.plugin.settings.uploadFileFormat).onChange(async (value) => {
         this.plugin.settings.uploadFileFormat = value;
