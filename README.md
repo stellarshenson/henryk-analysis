@@ -24,7 +24,7 @@ Those recordings are processed, information is extracted and will be delivered t
 text, that being videos and stories, that may one day reach my sone despite the ever present dome of fear and hatred.
 
 As a side effect of the work I do on the AI and automation - I was able to build powerful statistical reasoning
-framework for my court case - and a pile of evidence that no one will be able to question. Making this project
+framework for my court case - and a mount of objective evidence that no one will be able to question. Making this project
 public allows me to claim transparency and share with everyone the tools, methods, methodology and the craft that
 I did use to make this everything happen.
 
