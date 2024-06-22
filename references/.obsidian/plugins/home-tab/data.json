@@ -13,7 +13,7 @@
   "fontColorType": "default",
   "fontWeight": 600,
   "maxResults": 10,
-  "showStarredFiles": false,
+  "showbookmarkedFiles": true,
   "showRecentFiles": true,
   "maxRecentFiles": 5,
   "storeRecentFile": true,
@@ -24,22 +24,17 @@
   "unresolvedLinks": false,
   "recentFilesStore": [
     {
-      "filepath": "Recordings Stats.md",
-      "timestamp": 1719001780162
-    },
-    {
-      "filepath": "ChatGPT_Prompts.md",
-      "timestamp": 1719001775009
-    },
-    {
-      "filepath": "@attachments/download (4.md",
-      "timestamp": 1719001773097
+      "filepath": "Statystyki Nagrań Taty Dla Henryka.md",
+      "timestamp": 1719073390034
     }
   ],
-  "starredFileStore": [],
+  "bookmarkedFileStore": [],
   "searchDelay": 0,
   "replaceNewTabs": true,
   "newTabOnStart": false,
   "closePreviousSessionTabs": false,
-  "omnisearch": false
+  "omnisearch": false,
+  "showOmnisearchExcerpt": true,
+  "showStarredFiles": false,
+  "starredFileStore": []
 }

@@ -1,9 +1,9 @@
 {
 	"id": "copy-url-in-preview",
-	"name": "Copy Image and URL context menu",
-	"version": "1.5.1",
-	"minAppVersion": "0.16.3",
-	"description": "Copy Image, Copy URL and Open PDF externally context menu in reading view (formerly preview mode)",
+	"name": "Image Context Menus",
+	"version": "1.8.0",
+	"minAppVersion": "1.5.7",
+	"description": "Copy to clipboard, Open in default app, Show in system explorer, Reveal file in navigation, Open in new tab context menus for images. Also has an pen PDF externally context menu.",
 	"author": "NomarCub",
 	"authorUrl": "https://github.com/NomarCub",
 	"fundingUrl": "https://ko-fi.com/nomarcub",
