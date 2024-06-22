@@ -45,3 +45,9 @@ As of now following components of the analysis were developed
 Recordings and transcriptions are not publically available yet. They are encrypted and my lawyers are looking into them (yesss, all 500+ of them) and will tell me if I can release them to the public. Once I do this - chances that one of those humble recordings gets finally to my son ... I can't even think of it. Videos will follow. But those videos will be based on the recordings thanks to a technogy that is cooking on my RTX 4090 GPU as we speak. Hush. 
 
 Feel free to play with the datasets available in the `data/processed`, specifically the classification datasets. Super interesting. You will like it. 
+
+## Installation
+- You need conda based environment to run this. you can use a prebuilt environment available as docker-compose project: [stellars-jupyterlab-ds](https://github.com/stellarshenson/stellars-jupyterlab-ds) that I have created an my entire data science team uses it in my company for work.
+- you need to execute 'make install_all' to install all dependencies from the environment file and the library
+
+feel free to contact me if you need any help
