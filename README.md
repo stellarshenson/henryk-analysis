@@ -9,7 +9,7 @@ I am a loving father to my 3-year-old son, Henryk, who has been alienated from m
 
 This project also serves a therapeutic purpose for me. As I wait for the court system to take action, I must deal with the aggressive patterns of Parental Alienation. Although it is difficult, I am resilient. I have the support of a therapist and a circle of friends. However, my son only has his mother, who is depriving him of the love and closeness of a loving parent. I cannot imagine what he is going through, being only 3 years old and subjected to separation and constant attempts to isolate him from his father.
 
-![Father and son alienated](./.res/father_and_son_alienated2.jpg)
+![Father and son alienated](./.res/father_and_son_alienated.webp)
 
 My heart aches at the thought of this, but then I focus on building. I build my life, my career, and great technologies. This project is built with the hope that one day I will be able to share it with him and see him smile.
 
