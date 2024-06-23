@@ -1,4 +1,4 @@
-# Henryk AI Analysis and Generation
+# Henry AI Analysis and Generation
 
 ## Purpose
 The primary goal of this project is to create a platform that allows my audio recordings and other content to reach my alienated son, Henry, through various channels. My hope is that one day he will see the legacy and love that has always been there for him.
