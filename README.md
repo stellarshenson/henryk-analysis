@@ -7,7 +7,7 @@ I am a loving father to my 3-year-old son, Henryk, who has been alienated from m
 
 ![Father's recordings for son](./.res/father_recordings_for_son4.WEBP)
 
-This project also serves a therapeutic purpose for me. As I wait for the court system to take action, I must deal with the aggressive patterns of Parental Alienation. Although it is difficult, I am resilient. I have the support of a therapist and a circle of friends. However, my son only has his mother, who is depriving him of the love and closeness of a loving parent. I cannot imagine what he is going through, being only 3 years old and subjected to separation and constant attempts to isolate him from his father.
+This project also serves a therapeutic purpose for me. As I wait for the court system to take action, I must deal with the aggressive patterns of Parental Alienation. Although it is difficult, I am resilient. I have the support of a therapist and a circle of friends. However, my son doesn't have that kind of support system and he is and noone to turn to. I cannot imagine what he is going through, being only 3 years old and subjected to separation and constant attempts to isolate him from his father.
 
 ![Father and son alienated](./.res/father_and_son_alienated.webp)
 
@@ -18,11 +18,11 @@ This project revolves around over 500+ audio recordings that I have made for my 
 
 The recordings are processed, information is extracted, and they will be delivered through various channels such as text, videos, and stories. These may eventually reach my son despite the current barriers of fear and hatred.
 
-As a side effect of my work on AI and automation, I have built a powerful statistical reasoning framework for my court case, accumulating objective evidence that is hard to dispute. By making this project public, I aim to claim transparency and share the tools, methods, and methodologies I used to make this happen.
+As a side effect of my work on AI and automation, I have built a powerful statistical reasoning framework for my court case, accumulating objective evidence that is hard to dispute. By making this project public, I aim also to claim transparency and share the tools, methods, and methodologies I used to make this happen.
 
 ![Father's project for son](./.res/father_project_for_son3.WEBP)
 
-I hope that the statistical analysis of the available data will reveal patterns of his mother's behavior that I can present to the court as evidence.
+I hope that the statistical analysis of the available data will reveal parental alienation patterns that I can use to help my son and restore our connection.
 
 ## Components
 Currently, the following components of the analysis have been developed:
