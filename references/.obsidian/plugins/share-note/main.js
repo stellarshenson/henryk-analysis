@@ -40,7 +40,7 @@ var require_manifest = __commonJS({
     module2.exports = {
       id: "share-note",
       name: "Share Note",
-      version: "0.8.4",
+      version: "0.8.11",
       minAppVersion: "0.15.0",
       description: "Instantly share a note, with the full theme and content exactly like you see in Reading View. Data is shared encrypted by default, and only you and the person you send it to have the key.",
       author: "Alan Grainger",
@@ -298,27 +298,27 @@ var require_util = __commonJS({
       };
     }
     var normalize = lruMemoize(function normalize2(aPath) {
-      var path = aPath;
+      var path2 = aPath;
       var url = urlParse(aPath);
       if (url) {
         if (!url.path) {
           return aPath;
         }
-        path = url.path;
+        path2 = url.path;
       }
-      var isAbsolute = exports.isAbsolute(path);
+      var isAbsolute = exports.isAbsolute(path2);
       var parts = [];
       var start = 0;
       var i2 = 0;
       while (true) {
         start = i2;
-        i2 = path.indexOf("/", start);
+        i2 = path2.indexOf("/", start);
         if (i2 === -1) {
-          parts.push(path.slice(start));
+          parts.push(path2.slice(start));
           break;
         } else {
-          parts.push(path.slice(start, i2));
-          while (i2 < path.length && path[i2] === "/") {
+          parts.push(path2.slice(start, i2));
+          while (i2 < path2.length && path2[i2] === "/") {
             i2++;
           }
         }
@@ -339,15 +339,15 @@ var require_util = __commonJS({
           }
         }
       }
-      path = parts.join("/");
-      if (path === "") {
-        path = isAbsolute ? "/" : ".";
+      path2 = parts.join("/");
+      if (path2 === "") {
+        path2 = isAbsolute ? "/" : ".";
       }
       if (url) {
-        url.path = path;
+        url.path = path2;
         return urlGenerate(url);
       }
-      return path;
+      return path2;
     });
     exports.normalize = normalize;
     function join(aRoot, aPath) {
@@ -1030,6 +1030,7 @@ var DEFAULT_SETTINGS = {
   themeMode: 0 /* Same as theme */,
   titleSource: 0 /* Note title */,
   removeYaml: true,
+  removeBacklinksFooter: true,
   expiry: "",
   clipboard: true,
   shareUnencrypted: false,
@@ -1097,6 +1098,13 @@ var ShareSettingsTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("Remove published frontmatter/YAML").setDesc("Remove frontmatter/YAML/properties from the shared note").addToggle((toggle) => {
       toggle.setValue(this.plugin.settings.removeYaml).onChange(async (value) => {
         this.plugin.settings.removeYaml = value;
+        await this.plugin.saveSettings();
+        this.display();
+      });
+    });
+    new import_obsidian.Setting(containerEl).setName("Remove backlinks footer").setDesc("Remove backlinks footer from the shared note").addToggle((toggle) => {
+      toggle.setValue(this.plugin.settings.removeBacklinksFooter).onChange(async (value) => {
+        this.plugin.settings.removeBacklinksFooter = value;
         await this.plugin.saveSettings();
         this.display();
       });
@@ -14912,6 +14920,7 @@ function minifyStylesheet(source, options) {
 }
 
 // src/note.ts
+var path = __toESM(require("path"));
 var cssAttachmentWhitelist = {
   ttf: ["font/ttf", "application/x-font-ttf", "application/x-font-truetype", "font/truetype"],
   otf: ["font/otf", "application/x-font-opentype"],
@@ -14926,7 +14935,7 @@ var Note = class {
     this.isForceClipboard = false;
     var _a;
     this.plugin = plugin;
-    this.leaf = (_a = this.plugin.app.workspace.activeEditor) == null ? void 0 : _a.leaf;
+    this.leaf = (_a = this.plugin.app.workspace.getActiveFileView()) == null ? void 0 : _a.leaf;
     this.elements = [];
     this.template = new NoteTemplate();
   }
@@ -14939,7 +14948,7 @@ var Note = class {
     return this.plugin.field(key);
   }
   async share() {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
     if (!this.plugin.settings.apiKey) {
       this.plugin.authRedirect("share").then();
       return;
@@ -14956,7 +14965,9 @@ var Note = class {
       const view = this.leaf.view;
       const renderer = view.modes.preview.renderer;
       this.elements.push(getElementStyle("html", document.documentElement));
-      this.elements.push(getElementStyle("body", document.body));
+      const bodyStyle = getElementStyle("body", document.body);
+      bodyStyle.classes.push("share-note-plugin");
+      this.elements.push(bodyStyle);
       this.elements.push(getElementStyle("preview", renderer.previewEl));
       this.elements.push(getElementStyle("pusher", renderer.pusherEl));
       this.contentDom = new DOMParser().parseFromString(await this.querySelectorAll(this.leaf.view), "text/html");
@@ -14986,6 +14997,13 @@ var Note = class {
       (_a = this.contentDom.querySelector("div.metadata-container")) == null ? void 0 : _a.remove();
       (_b = this.contentDom.querySelector("pre.frontmatter")) == null ? void 0 : _b.remove();
       (_c = this.contentDom.querySelector("div.frontmatter-container")) == null ? void 0 : _c.remove();
+    } else {
+      this.contentDom.querySelectorAll("input.metadata-property-key-input").forEach((el) => {
+        el.setAttribute("value", el.getAttribute("aria-label") || "");
+      });
+    }
+    if (this.plugin.settings.removeBacklinksFooter) {
+      (_d = this.contentDom.querySelector("div.embedded-backlinks")) == null ? void 0 : _d.remove();
     }
     const defaultCalloutType = this.getCalloutIcon((selectorText) => selectorText === ".callout") || "pencil";
     for (const el of this.contentDom.getElementsByClassName("callout")) {
@@ -15003,7 +15021,7 @@ var Note = class {
       const match = href ? href.match(/^([^#]+)/) : null;
       if (href == null ? void 0 : href.match(/^#/)) {
         const selector2 = `[data-heading="${href.slice(1)}"]`;
-        if ((_d = this.contentDom.querySelectorAll(selector2)) == null ? void 0 : _d[0]) {
+        if ((_e = this.contentDom.querySelectorAll(selector2)) == null ? void 0 : _e[0]) {
           el.setAttribute("onclick", `document.querySelectorAll('${selector2}')[0].scrollIntoView(true)`);
         }
         el.removeAttribute("target");
@@ -15013,7 +15031,7 @@ var Note = class {
         const linkedFile = this.plugin.app.metadataCache.getFirstLinkpathDest(match[1], "");
         if (linkedFile instanceof import_obsidian4.TFile) {
           const linkedMeta = this.plugin.app.metadataCache.getFileCache(linkedFile);
-          if ((_e = linkedMeta == null ? void 0 : linkedMeta.frontmatter) == null ? void 0 : _e[this.field(0 /* link */)]) {
+          if ((_f = linkedMeta == null ? void 0 : linkedMeta.frontmatter) == null ? void 0 : _f[this.field(0 /* link */)]) {
             el.setAttribute("href", linkedMeta.frontmatter[this.field(0 /* link */)]);
             el.removeAttribute("target");
             continue;
@@ -15030,7 +15048,7 @@ var Note = class {
     this.cssResult = uploadResult.css;
     await this.processCss();
     let decryptionKey = "";
-    if ((_g = (_f = this.meta) == null ? void 0 : _f.frontmatter) == null ? void 0 : _g[this.field(0 /* link */)]) {
+    if ((_h = (_g = this.meta) == null ? void 0 : _g.frontmatter) == null ? void 0 : _h[this.field(0 /* link */)]) {
       const match = parseExistingShareUrl(this.meta.frontmatter[this.field(0 /* link */)]);
       if (match) {
         this.template.filename = match.filename;
@@ -15041,10 +15059,10 @@ var Note = class {
     let title;
     switch (this.plugin.settings.titleSource) {
       case 1 /* First H1 */:
-        title = (_i = (_h = this.contentDom.getElementsByTagName("h1")) == null ? void 0 : _h[0]) == null ? void 0 : _i.innerText;
+        title = (_j = (_i = this.contentDom.getElementsByTagName("h1")) == null ? void 0 : _i[0]) == null ? void 0 : _j.innerText;
         break;
       case 2 /* Frontmatter property */:
-        title = (_k = (_j = this.meta) == null ? void 0 : _j.frontmatter) == null ? void 0 : _k[this.field(4 /* title */)];
+        title = (_l = (_k = this.meta) == null ? void 0 : _k.frontmatter) == null ? void 0 : _l[this.field(4 /* title */)];
         break;
     }
     if (!title) {
@@ -15105,32 +15123,27 @@ var Note = class {
    * Upload media attachments
    */
   async processMedia() {
+    var _a;
     const elements = ["img", "video"];
     this.status.setStatus("Processing attachments...");
     for (const el of this.contentDom.querySelectorAll(elements.join(","))) {
       const src = el.getAttribute("src");
       if (!src)
         continue;
-      let content;
-      let filepath = "";
-      if (src.startsWith("app://")) {
-        const srcMatch = src.match(/app:\/\/\w+\/([^?#]+)/);
-        if (srcMatch) {
-          filepath = window.decodeURIComponent(srcMatch[1]);
-          content = await import_obsidian4.FileSystemAdapter.readLocalFile(filepath);
-        }
-      } else if (src.match(/^https?:\/\/localhost/) || !src.startsWith("http")) {
-        filepath = src;
-        try {
-          const res = await fetch(filepath);
-          if (res && res.status === 200) {
-            content = await res.arrayBuffer();
-          }
-        } catch (e2) {
-          continue;
-        }
+      if (src.startsWith("http") && !src.match(/^https?:\/\/localhost/)) {
+        continue;
       }
-      const filetype = filepath.split(".").pop();
+      let content;
+      try {
+        const res = await fetch(src);
+        if (res && res.status === 200) {
+          content = await res.arrayBuffer();
+        }
+      } catch (e2) {
+        continue;
+      }
+      const parsed = new URL(src);
+      const filetype = (_a = path.extname(parsed.pathname)) == null ? void 0 : _a.slice(1);
       if (filetype && content) {
         const hash = await sha1(content);
         await this.plugin.api.queueUpload({
