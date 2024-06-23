@@ -14,5 +14,6 @@ dependencies:
     - json_repair
     - names_generator
     - plotly
+    - transformers
   
 # EOF
