@@ -10,7 +10,7 @@ for the court system to find their own backside, I have to deal with the ever-ag
 And it is his mother that is taking away from him the love, support and closenes of a loving parent.
 I cannot imagine what he must be going through. He is only 3y old, but the separation and ever present hatred combined with obsessive efforts to isolate him from his father - must have taken a toll on this young one.
 
-![](./.res/father_and_son_alienated.webp)
+![](./.res/father_and_son_alienated2.WEBP)
 
 My heart bleeds at the slightest mention or thought of this. And then ... I sit and build.
 I build my life. Build my career. Build great technologies. build this project. For the hope that one day I 
