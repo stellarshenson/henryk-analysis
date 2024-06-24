@@ -1,47 +1,43 @@
-# Henryk AI Analysis and Generation
-Primary purpose for this project is to build a plaform that will allow my audio recordings and other content to reach my alienated son, over many channels - and one day he would see how much legacy and love is waiting for him. 
+# Henry AI Analysis and Generation
 
-I am a loving father of a 3y old Henry and my son is being alienated from me for more than 2.5 years. I am doing everything in my power to maintain the connection to my son despite the situation. This results in a huge number of audio recordings for him and also this data science and automation project.
+## Purpose
+The primary goal of this project is to create a platform that allows my audio recordings and other content to reach my alienated son, Henry, through various channels. My hope is that one day he will see the legacy and love that has always been there for him.
 
-![](./.res/father_recordings_for_son3.WEBP)
+I am a loving father to my 3-year-old son, Henry, who has been alienated from me for over 2.5 years. Despite the challenging circumstances, I am determined to maintain a connection with him. This has led to a significant number of audio recordings and the development of this data science and automation project.
 
-This project serves also a therapeutic role for me - while waiting
-for the court system to find their own backside, I have to deal with the ever-agressive patterns of Parental Alienation. But his is nothing. I can deal with it. I have a therapist and a circle of friends who support me no matter what. But my son has only his mother.
-And it is his mother that is taking away from him the love, support and closenes of a loving parent.
-I cannot imagine what he must be going through. He is only 3y old, but the separation and ever present hatred combined with obsessive efforts to isolate him from his father - must have taken a toll on this young one.
+![Father's recordings for son](./.res/father_recordings_for_son4.WEBP)
 
-![](./.res/father_and_son_alienated.webp)
+This project also serves a therapeutic purpose for me. As I wait for the court system to take action, I must deal with the aggressive patterns of Parental Alienation. Although it is difficult, I am resilient. I have the support of a therapist and a circle of friends. However, my son doesn't have that kind of support system and he is and noone to turn to. I cannot imagine what he is going through, being only 3 years old and subjected to separation and constant attempts to isolate him from his father.
 
-My heart bleeds at the slightest mention or thought of this. And then ... I sit and build.
-I build my life. Build my career. Build great technologies. build this project. For the hope that one day I 
-will be able to share this with him. And maybe, just maybe, I will see him smile some day.
+![Father and son alienated](./.res/father_and_son_alienated.webp)
 
-This project focuses on over 500+ audio recordings that I have recorded for my son - and continue to do so. Those recordings were and are my attempt to connect to my son an let him at least hear my voice. 
+My heart aches at the thought of this, but then I focus on building. I build my life, my career, and great technologies. This project is built with the hope that one day I will be able to share it with him and see him smile.
 
-In those recordings I am telling him the stories. Stories from my life, his family here, friends and things - like animals, phenomena, stars, nature and more. With the hope that one day he may doscover it all and take on a journey to learn about his father. 
+## Project Focus
+This project revolves around over 500+ audio recordings that I have made for my son, and I continue to make more. These recordings are my way of trying to connect with him and let him hear my voice. In these recordings, I share stories from my life, our family, friends, and various topics like animals, phenomena, stars, nature, and more. My hope is that one day he will discover these recordings and embark on a journey to learn about his father.
 
-Those recordings are processed, information is extracted and will be delivered to different channels - that being
-text, that being videos and stories, that may one day reach my sone despite the ever present dome of fear and hatred.
+The recordings are processed, information is extracted, and they will be delivered through various channels such as text, videos, and stories. These may eventually reach my son despite the current barriers of fear and hatred.
 
-As a side effect of the work I do on the AI and automation - I was able to build powerful statistical reasoning
-framework for my court case - and a pile of evidence that no one will be able to question. Making this project
-public allows me to claim transparency and share with everyone the tools, methods, methodology and the craft that
-I did use to make this everything happen.
+As a side effect of my work on AI and automation, I have built a powerful statistical reasoning framework for my court case, accumulating objective evidence that is hard to dispute. By making this project public, I aim also to claim transparency and share the tools, methods, and methodologies I used to make this happen.
 
-![](./.res/father_project_for_son3.WEBP)
+![Father's project for son](./.res/father_project_for_son3.WEBP)
 
-I can only hope that
-statistical analysis of the data available to me would reveal patterns
-of his mother behaviour that I can submit to the court as evidence
+I hope that the statistical analysis of the available data will reveal parental alienation patterns that I can use to help my son and restore our connection.
 
 ## Components
-As of now following components of the analysis were developed
+Currently, the following components of the analysis have been developed:
 
-- **recordings** - analysis of my recordings for Henry, that is their duration, frequency and other stats. Now it also has automated transcription and automated classification through NLP reasoning over some well crafter prompts - that anyone can run on the same data that I have had available. And achieve similar results. 
-- **visits** - analysis of my meetings with Henry. Mainly the analysis of the probabilities of certain events such as Henry's sickness that conicidentally happend during my visits and other things
+- **Recordings**: Analysis of my recordings for Henry, including their duration, frequency, and other statistics. This now includes automated transcription and classification through NLP reasoning with well-crafted prompts, allowing anyone to run similar analyses on the same data.
+- **Visits**: Analysis of my meetings with Henry, focusing on the probabilities of certain events, such as Henry's sickness coinciding with my visits and other occurrences.
 
 **IMPORTANT**
 
-Recordings and transcriptions are not publically available yet. They are encrypted and my lawyers are looking into them (yesss, all 500+ of them) and will tell me if I can release them to the public. Once I do this - chances that one of those humble recordings gets finally to my son ... I can't even think of it. Videos will follow. But those videos will be based on the recordings thanks to a technogy that is cooking on my RTX 4090 GPU as we speak. Hush. 
+The recordings and transcriptions are not yet publicly available. They are encrypted, and my lawyers are reviewing them. Once I receive approval, I will release them to the public, increasing the chances that one of these humble recordings might finally reach my son. Videos will follow, created based on the recordings using technology currently in development on my RTX 4090 GPU.
 
-Feel free to play with the datasets available in the `data/processed`, specifically the classification datasets. Super interesting. You will like it. 
+Feel free to explore the datasets available in the `data/processed` directory, especially the classification datasets. They are fascinating and worth a look.
+
+## Installation
+- You need a conda-based environment to run this project. You can use a prebuilt environment available as a Docker-compose project: [stellars-jupyterlab-ds](https://github.com/stellarshenson/stellars-jupyterlab-ds), which I created and my entire data science team uses in my company. This project utilizes the free Miniforge with the conda-forge repository.
+- Execute `make install_all` to install all dependencies from the environment file and the library.
+
+Feel free to contact me if you need any help.

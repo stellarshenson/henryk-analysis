@@ -5,16 +5,8 @@
       "path": "Statystyki Nagrań Taty Dla Henryka.md"
     },
     {
-      "basename": "Git-Perma-Remove",
-      "path": "Git-Perma-Remove.md"
-    },
-    {
       "basename": "Audio Conversions",
       "path": "Audio Conversions.md"
-    },
-    {
-      "basename": "transcriptions_stats_analysis",
-      "path": "transcriptions_stats_analysis.md"
     },
     {
       "basename": "ChatGPT_Prompts",
@@ -23,6 +15,14 @@
     {
       "basename": "Example Classification",
       "path": "Example Classification.md"
+    },
+    {
+      "basename": "transcriptions_stats_analysis",
+      "path": "transcriptions_stats_analysis.md"
+    },
+    {
+      "basename": "Git-Perma-Remove",
+      "path": "Git-Perma-Remove.md"
     }
   ],
   "omittedPaths": [],
