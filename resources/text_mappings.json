@@ -1,5 +1,5 @@
 {
-    "classification.overall_sentiment": "Ogólny Ton Nagrania",
+    "classification.overall_sentiment": "Ogólny Wydźwięk Nagrania",
     "Frequency": "Liczba Nagrań",
     "classification.fairy_tale": "Bajka",
     "classification.dad_love": "Miłość ojca",
@@ -8,8 +8,8 @@
     "classification.mother_family_mentions": "Wzmianki o rodzinie matki",
     "classification.privacy_concern": "Obawy o prywatność",
     "classification.privacy_concern_type": "Rodzaje Obaw o prywatność",
-    "classification.mother_family_mentions_sentiment": "Ton wzmianek o rodzinie matki",
-    "classification.mother_mentions_sentiment": "Ton wzmianek o matce",
+    "classification.mother_family_mentions_sentiment": "Wydźwięk wzmianek o rodzinie matki",
+    "classification.mother_mentions_sentiment": "Wydźwięk wzmianek o matce",
     "classification.dad_tale_main_theme": "Motyw przewodni bajek",
     "classification.fairy_tale_theme": "Rodzaje bajek",
     "classification.overall_mood": "Nastrój w jakim utrzymane są nagrania"
