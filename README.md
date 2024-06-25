@@ -3,6 +3,8 @@
 ## Purpose
 The primary goal of this project is to create a platform that allows my audio recordings and other content to reach my alienated son, Henry, through various channels. My hope is that one day he will see the legacy and love that has always been there for him.
 
+![Father's recordings for son](./.res/stories_from_father_to_son.webp)
+
 I am a loving father to my 3-year-old son, Henry, who has been alienated from me for over 2.5 years. Despite the challenging circumstances, I am determined to maintain a connection with him. This has led to a significant number of audio recordings and the development of this data science and automation project.
 
 ![Father's recordings for son](./.res/father_recordings_for_son4.WEBP)
