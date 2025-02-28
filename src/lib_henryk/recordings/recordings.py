@@ -206,8 +206,91 @@ def analyze_and_print_gaps(df, min_gap_days = 1):
         print("No temporal discontinuities detected, Star Captain. Data integrity confirmed.")
 
 
-def plot_recordings_stats(df: pd.DataFrame):
+# def plot_recordings_stats(df: pd.DataFrame):
 
+#     #### STAGE 1 - analyse the stats
+    
+#     # selector to select only those from father
+#     df_from_me = df[ df['kind'] == 'Henryk' ]
+    
+#     """
+#     calculate scalar values
+#     - total duration
+#     - total count
+#     """
+#     total_duration_s = df['duration'].sum()
+#     total_duration_h = total_duration_s / 3600
+#     total_duration_d = np.floor(total_duration_h / 24)
+#     total_duration_d_h = total_duration_h - total_duration_d * 24
+#     date_min = df['date'].min()
+#     date_max = df['date'].max()
+    
+#     """
+#     duration of the recordings, group them by day
+#     and perform moving average on them
+#     """
+#     df_duration_by_date = df.groupby('date')['duration'].sum() / 60
+#     df_duration_by_date =  df_duration_by_date.to_frame()['duration'].to_frame() \
+#         .rolling(14, closed='both', center=True).mean()
+#     df_duration_by_date = df_duration_by_date.bfill().ffill() # fill nulls after rolling average
+    
+#     # display(df_duration_by_date)
+    
+#     """
+#     count of the recordings (per week) 
+#     and index them by the 'week of' date column
+#     and next average them by month (4 weeks)
+#     """
+    
+#     df_count_by_week = df.copy()
+#     df_count_by_week['week'] = df['date'].dt.strftime('%Y') + '-' + df['date'].dt.strftime('%W')
+#     df_count_by_week = df_count_by_week.groupby('week').agg({'date':['min'], 'name' : ['count']})
+#     df_count_by_week = df_count_by_week.droplevel(axis=1, level=1).rename(columns={'name':'count'}) \
+#         .reset_index().set_index('date').drop('week', axis=1)
+#     df_count_by_week.iloc[[0,-1],[0]] = None # remove count value from first and last row, because weeks are incomplete
+#     df_count_by_week = df_count_by_week['count'].to_frame().rolling(1, closed='both', center=True).mean()
+#     df_count_by_week = df_count_by_week.bfill().ffill() # fill nulls after rolling average
+#     df_count_by_week['count'] = df_count_by_week['count'].round()
+    
+#     ### STAGE 2 - plot the results
+    
+#     # plot number of minutes / day
+#     fig, axs = plt.subplots(2, 1, figsize=(12,8))
+#     sns.scatterplot(ax=axs[0], data=df_duration_by_date, linewidth=0.05, s=25, alpha=1)
+#     axs[0].vlines(x=df_duration_by_date.index, ymin=0, ymax=df_duration_by_date['duration'], color='skyblue', alpha =0.8)
+#     axs[0].set_title(f'Długość {len(df)} nagrań od taty dla Henryka od {date_min.date()} do {date_max.date()}' 
+#                  + '\n' + f'Całkowita długość nagrań wynosi {total_duration_h:,.0f} godzin ({total_duration_d:,.0f} pełnych dni i {total_duration_d_h:.0f} godzin)' )
+#     axs[0].grid(axis='y')
+#     axs[0].legend(loc='upper right', labels=['Długość nagrań dla Henryka'])
+#     axs[0].get_legend().remove()
+#     axs[0].tick_params(axis='x', labelrotation=45, labelsize=8)
+#     axs[0].set_ylabel("Długość nagrań (minuty)")
+#     axs[0].set_xlabel("Data")
+#     axs[0].set_xlim( (date_min, date_max) )
+#     axs[0].set_ylim( bottom=0 )
+#     axs[0].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=14, maxticks=22))   #to get a tick every 15 minutes
+    
+#     # plot number of recordings / week
+#     sns.barplot(ax=axs[1], x=df_count_by_week.index, hue=df_count_by_week.index, y=df_count_by_week['count'], palette='Blues_d', legend=False)
+#     axs[1].set_title(f'Tygodniowa liczba nagrań od taty dla Henryka, ponad {len(df_count_by_week)} tygodni alienacji' )
+#     axs[1].grid(axis='y')
+#     axs[1].set_ylabel("Ilość nagrań w tygodniu")
+#     axs[1].set_xlabel("Tydzień")
+#     y_max = int(axs[1].get_ybound()[1])
+#     axs[1].set_xticks( range(0,y_max) )
+#     axs[1].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=14, maxticks=22))   #to get a tick every 15 minutes
+#     axs[1].tick_params(axis='x', labelrotation=45, labelsize=8)
+#     fig.tight_layout(rect=[0, 0.01, 1, 0.99])
+#     plt.show()
+
+def plot_recordings_stats(df: pd.DataFrame):
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import matplotlib.dates as mdates
+    import seaborn as sns
+    from matplotlib.lines import Line2D
+    
     #### STAGE 1 - analyse the stats
     
     # selector to select only those from father
@@ -254,32 +337,107 @@ def plot_recordings_stats(df: pd.DataFrame):
     
     ### STAGE 2 - plot the results
     
-    # plot number of minutes / day
+    # Define a dictionary of colors for years
+    year_colors = {
+        2021: '#1f77a4',  # blue
+        2022: '#5ca05c',  # green
+        2023: '#d65758',  # red
+        2024: '#9477bd',  # purple
+        2025: '#ff7f0e',  # orange
+    }
+    
+    # Add year to the dataframes
+    df_duration_by_date['year'] = df_duration_by_date.index.year
+    
+    # Create figure and axes
     fig, axs = plt.subplots(2, 1, figsize=(12,8))
-    sns.scatterplot(ax=axs[0], data=df_duration_by_date, linewidth=0.05, s=25, alpha=1)
-    axs[0].vlines(x=df_duration_by_date.index, ymin=0, ymax=df_duration_by_date['duration'], color='skyblue', alpha =0.8)
+    
+    # FIRST PLOT: Duration data colored by year
+    years = sorted(df_duration_by_date.index.year.unique())
+    for year in years:
+        # Get data for this year
+        year_data = df_duration_by_date[df_duration_by_date.index.year == year]
+        color = year_colors.get(year, 'blue')
+        
+        # Plot points
+        axs[0].scatter(year_data.index, year_data['duration'], 
+                     linewidth=0.05, s=25, alpha=1, color=color, label=str(year))
+        
+        # Plot lines
+        axs[0].vlines(x=year_data.index, ymin=0, ymax=year_data['duration'], 
+                     color=color, alpha=0.8)
+    
+    # Set properties for the first plot
     axs[0].set_title(f'Długość {len(df)} nagrań od taty dla Henryka od {date_min.date()} do {date_max.date()}' 
                  + '\n' + f'Całkowita długość nagrań wynosi {total_duration_h:,.0f} godzin ({total_duration_d:,.0f} pełnych dni i {total_duration_d_h:.0f} godzin)' )
     axs[0].grid(axis='y')
-    axs[0].legend(loc='upper right', labels=['Długość nagrań dla Henryka'])
-    axs[0].get_legend().remove()
-    axs[0].tick_params(axis='x', labelrotation=45, labelsize=8)
     axs[0].set_ylabel("Długość nagrań (minuty)")
     axs[0].set_xlabel("Data")
-    axs[0].set_xlim( (date_min, date_max) )
-    axs[0].set_ylim( bottom=0 )
-    axs[0].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=14, maxticks=22))   #to get a tick every 15 minutes
+    axs[0].set_xlim((date_min, date_max))
+    axs[0].set_ylim(bottom=0)
+    axs[0].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=14, maxticks=22))
+    axs[0].tick_params(axis='x', labelrotation=45, labelsize=8)
     
-    # plot number of recordings / week
-    sns.barplot(ax=axs[1], x=df_count_by_week.index, hue=df_count_by_week.index, y=df_count_by_week['count'], palette='Blues_d', legend=False)
-    axs[1].set_title(f'Tygodniowa liczba nagrań od taty dla Henryka, ponad {len(df_count_by_week)} tygodni alienacji' )
+    # Create a legend for years
+    legend_elements = [Line2D([0], [0], color=year_colors.get(year, 'black'), lw=4, label=str(year)) 
+                       for year in years]
+    axs[0].legend(handles=legend_elements, loc='lower right', title='Lata')
+    
+    # SECOND PLOT: Weekly count data colored by year
+    # Add year to weekly count dataframe
+    df_count_by_week['year'] = df_count_by_week.index.year
+    
+    # Convert index to matplotlib dates for bar positions
+    x_positions = mdates.date2num(df_count_by_week.index)
+    
+    # Determine bar width based on data - MAKE BARS WIDER
+    if len(x_positions) > 1:
+        # Calculate average spacing between bars
+        avg_spacing = np.mean(np.diff(x_positions))
+        # Make bars wider - use 98% of available space between points
+        width = avg_spacing * 0.98
+    else:
+        width = 7  # Default to 7 days if only one data point
+    
+    # Calculate exact x-axis limits to eliminate margins
+    min_date = min(df_count_by_week.index)
+    max_date = max(df_count_by_week.index)
+    
+    # Calculate half bar width in date units to extend the limits exactly to bar edges
+    half_width_days = width / 2
+    
+    # Plot bars with colors by year
+    for i, (idx, row) in enumerate(df_count_by_week.iterrows()):
+        if not np.isnan(row['count']):
+            year = idx.year
+            color = year_colors.get(year, 'blue')
+            axs[1].bar(x_positions[i], row['count'], width=width, color=color, alpha=0.9, edgecolor='black', linewidth=0.5)
+    
+    # Set properties for the second plot
+    axs[1].set_title(f'Tygodniowa liczba nagrań od taty dla Henryka, ponad {len(df_count_by_week)} tygodni alienacji')
     axs[1].grid(axis='y')
     axs[1].set_ylabel("Ilość nagrań w tygodniu")
     axs[1].set_xlabel("Tydzień")
-    y_max = int(axs[1].get_ybound()[1])
-    axs[1].set_xticks( range(0,y_max) )
-    axs[1].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=14, maxticks=22))   #to get a tick every 15 minutes
+    
+    # Set exact x-axis limits to eliminate margins
+    left_limit = mdates.date2num(min_date) - half_width_days
+    right_limit = mdates.date2num(max_date) + half_width_days
+    axs[1].set_xlim(left_limit, right_limit)
+    
+    # Set x-axis format for dates
+    axs[1].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    axs[1].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=14, maxticks=22))
     axs[1].tick_params(axis='x', labelrotation=45, labelsize=8)
+    
+    # Add legend to the second plot
+    axs[1].legend(handles=legend_elements, loc='lower right', title='Lata')
+    
+    # Disable autoscaling after setting limits
+    axs[1].autoscale(enable=False)
+    
+    # Eliminate any remaining padding
+    plt.rcParams['axes.xmargin'] = 0
+    
     fig.tight_layout(rect=[0, 0.01, 1, 0.99])
     plt.show()
 
