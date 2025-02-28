@@ -7,6 +7,14 @@ import matplotlib.pylab as plt
 import seaborn as sns
 from datetime import timedelta, datetime
 import numpy as np
+from tqdm.autonotebook import tqdm  # progress bar
+import pandas as pd
+import numpy as np
+import matplotlib.pylab as plt
+import matplotlib.dates as mdates
+import seaborn as sns
+from datetime import timedelta, datetime
+import numpy as np
 
 import pathlib
 import os
@@ -62,16 +70,19 @@ def get_recordings_info(path_recordings: str) -> pd.DataFrame:
         'duration': [], 
     } )
 
-    for i, f in enumerate(files_m4a):
-        progressBar(i,len(files_m4a)-1, prefix=f'processing {len(files_m4a)} audio files')
+    with tqdm(desc=f'processing {len(files_m4a)} audio files', total=len(files_m4a), **TQDM_PARAMS) as pbar:
+        for i, f in enumerate(files_m4a):
+    
+            # get audio file info
+            audio_recording_info = get_audio_file_info(recording_file_path=f)
+    
+            # add row to dataframe, recording info has the same items 
+            # as those that we expect in the dataframe
+            if audio_recording_info != None:
+                df.loc[len(df)] = audio_recording_info
 
-        # get audio file info
-        audio_recording_info = get_audio_file_info(recording_file_path=f)
-
-        # add row to dataframe, recording info has the same items 
-        # as those that we expect in the dataframe
-        if audio_recording_info != None:
-            df.loc[len(df)] = audio_recording_info
+            # progressbar update
+            pbar.update()
 
     # sort and reindex
     df = df.sort_values(by='date')
@@ -117,5 +128,159 @@ def get_audio_file_info(recording_file_path: str) -> dict:
     
     return _recording_info
 
+
+def identify_date_gaps(df, date_column='date', threshold=timedelta(days=1)):
+    """
+    Identifies gaps in datetime data that exceed a specified threshold.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        The dataframe containing datetime data
+    date_column : str
+        Name of the column containing datetime data
+    threshold : timedelta
+        The minimum gap size to report
+        
+    Returns:
+    --------
+    pandas.DataFrame
+        A dataframe containing the gaps found, with columns for start_date, 
+        end_date, and gap_days
+    """
+    # Ensure the date column is datetime type
+    df = df.copy()
+    if not pd.api.types.is_datetime64_any_dtype(df[date_column]):
+        df[date_column] = pd.to_datetime(df[date_column])
+    
+    # Sort by date
+    df = df.sort_values(by=date_column).reset_index(drop=True)
+    
+    # Calculate gaps
+    gaps = []
+    for i in range(1, len(df)):
+        current_date = df[date_column].iloc[i]
+        previous_date = df[date_column].iloc[i-1]
+        gap = current_date - previous_date
+        
+        if gap > threshold:
+            gaps.append({
+                'start_date': previous_date,
+                'end_date': current_date,
+                'gap_days': gap.total_seconds() / (60*60*24) - 1 # Convert to days
+            })
+    
+    # Create a dataframe of gaps
+    if gaps:
+        gaps_df = pd.DataFrame(gaps)
+        return gaps_df
+    else:
+        return pd.DataFrame(columns=['start_date', 'end_date', 'gap_days'])
+
+
+# Assuming 'df' is your dataframe with the date column
+def analyze_and_print_gaps(df, min_gap_days = 1):
+    print("Analyzing temporal data for discontinuities...")
+    
+    # Find gaps
+    gaps_df = identify_date_gaps(df, threshold=timedelta(days=min_gap_days + 1))
+    
+    if len(gaps_df) > 0:
+        print(f"Located {len(gaps_df)} temporal discontinuities exceeding {min_gap_days} days:")
+        print("="*60)
+        
+        for i, (_, row) in enumerate(gaps_df.iterrows()):
+            print(f"Gap {i+1}:")
+            print(f"  Start: {row['start_date'].strftime('%Y-%m-%d %H:%M:%S')}")
+            print(f"  End:   {row['end_date'].strftime('%Y-%m-%d %H:%M:%S')}")
+            print(f"  Duration: {row['gap_days']:.2f} days")
+            print("-"*60)
+            
+        # Output summary statistics
+        print("\nSummary:")
+        print(f"  Total gaps found: {len(gaps_df)}")
+        print(f"  Average gap size: {gaps_df['gap_days'].mean():.2f} days")
+        print(f"  Maximum gap size: {gaps_df['gap_days'].max():.2f} days")
+        print(f"  Minimum gap size: {gaps_df['gap_days'].min():.2f} days")
+    else:
+        print("No temporal discontinuities detected, Star Captain. Data integrity confirmed.")
+
+
+def plot_recordings_stats(df: pd.DataFrame):
+
+    #### STAGE 1 - analyse the stats
+    
+    # selector to select only those from father
+    df_from_me = df[ df['kind'] == 'Henryk' ]
+    
+    """
+    calculate scalar values
+    - total duration
+    - total count
+    """
+    total_duration_s = df['duration'].sum()
+    total_duration_h = total_duration_s / 3600
+    total_duration_d = np.floor(total_duration_h / 24)
+    total_duration_d_h = total_duration_h - total_duration_d * 24
+    date_min = df['date'].min()
+    date_max = df['date'].max()
+    
+    """
+    duration of the recordings, group them by day
+    and perform moving average on them
+    """
+    df_duration_by_date = df.groupby('date')['duration'].sum() / 60
+    df_duration_by_date =  df_duration_by_date.to_frame()['duration'].to_frame() \
+        .rolling(14, closed='both', center=True).mean()
+    df_duration_by_date = df_duration_by_date.bfill().ffill() # fill nulls after rolling average
+    
+    # display(df_duration_by_date)
+    
+    """
+    count of the recordings (per week) 
+    and index them by the 'week of' date column
+    and next average them by month (4 weeks)
+    """
+    
+    df_count_by_week = df.copy()
+    df_count_by_week['week'] = df['date'].dt.strftime('%Y') + '-' + df['date'].dt.strftime('%W')
+    df_count_by_week = df_count_by_week.groupby('week').agg({'date':['min'], 'name' : ['count']})
+    df_count_by_week = df_count_by_week.droplevel(axis=1, level=1).rename(columns={'name':'count'}) \
+        .reset_index().set_index('date').drop('week', axis=1)
+    df_count_by_week.iloc[[0,-1],[0]] = None # remove count value from first and last row, because weeks are incomplete
+    df_count_by_week = df_count_by_week['count'].to_frame().rolling(1, closed='both', center=True).mean()
+    df_count_by_week = df_count_by_week.bfill().ffill() # fill nulls after rolling average
+    df_count_by_week['count'] = df_count_by_week['count'].round()
+    
+    ### STAGE 2 - plot the results
+    
+    # plot number of minutes / day
+    fig, axs = plt.subplots(2, 1, figsize=(12,8))
+    sns.scatterplot(ax=axs[0], data=df_duration_by_date, linewidth=0.05, s=25, alpha=1)
+    axs[0].vlines(x=df_duration_by_date.index, ymin=0, ymax=df_duration_by_date['duration'], color='skyblue', alpha =0.8)
+    axs[0].set_title(f'Długość {len(df)} nagrań od taty dla Henryka od {date_min.date()} do {date_max.date()}' 
+                 + '\n' + f'Całkowita długość nagrań wynosi {total_duration_h:,.0f} godzin ({total_duration_d:,.0f} pełnych dni i {total_duration_d_h:.0f} godzin)' )
+    axs[0].grid(axis='y')
+    axs[0].legend(loc='upper right', labels=['Długość nagrań dla Henryka'])
+    axs[0].get_legend().remove()
+    axs[0].tick_params(axis='x', labelrotation=45, labelsize=8)
+    axs[0].set_ylabel("Długość nagrań (minuty)")
+    axs[0].set_xlabel("Data")
+    axs[0].set_xlim( (date_min, date_max) )
+    axs[0].set_ylim( bottom=0 )
+    axs[0].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=14, maxticks=22))   #to get a tick every 15 minutes
+    
+    # plot number of recordings / week
+    sns.barplot(ax=axs[1], x=df_count_by_week.index, hue=df_count_by_week.index, y=df_count_by_week['count'], palette='Blues_d', legend=False)
+    axs[1].set_title(f'Tygodniowa liczba nagrań od taty dla Henryka, ponad {len(df_count_by_week)} tygodni alienacji' )
+    axs[1].grid(axis='y')
+    axs[1].set_ylabel("Ilość nagrań w tygodniu")
+    axs[1].set_xlabel("Tydzień")
+    y_max = int(axs[1].get_ybound()[1])
+    axs[1].set_xticks( range(0,y_max) )
+    axs[1].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=14, maxticks=22))   #to get a tick every 15 minutes
+    axs[1].tick_params(axis='x', labelrotation=45, labelsize=8)
+    fig.tight_layout(rect=[0, 0.01, 1, 0.99])
+    plt.show()
 
 # EOF

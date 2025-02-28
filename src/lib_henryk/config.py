@@ -1,3 +1,13 @@
+import sys
+
+# TQDM config
+TQDM_PARAMS = {
+    "file": sys.stdout,
+    # "ncols": 120,
+    # "ascii": "-█████████",
+}
+
+
 FILE_RECORDINGS_STATS_PARQUET = '../../data/processed/henryk_recordings_stats.parquet'
 FILE_TRANSCRIPTIONS_PARQUET = '../../data/processed/henryk_recordings_transcriptions.parquet'
 FILE_TRANSCRIPTIONS_JSON = '../../data/processed/henryk_recordings_transcriptions.json'

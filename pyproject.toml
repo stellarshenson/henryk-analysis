@@ -1,47 +1,23 @@
 [build-system]
-requires = [
-    "setuptools",
-    "wheel"
-]
+requires = [ "setuptools", "wheel",]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "lib_henryk"
-version = "0.3"
-description="Henryk content creation and analysis"
-authors = [
-    {name = "Konrad Jelen <konrad.jelen@gmail.com>"},
-]
-license = {text = ""}
-
+version = "0.4"
+description = "Henryk content creation and analysis"
 requires-python = ">=3.10"
-dependencies = [
-    'ffmpeg-binaries',
-    'json_repair',
-    'markdown-it-py',
-    'matplotlib',
-    'mdit_plain',
-    'names_generator',
-    'numpy',
-    'openai',
-    'pandas',
-    'plotly',
-    'polars',
-    'pydub',
-    'python-docx',
-    'python-dotenv',
-    'scikit-learn',
-    'seaborn',
-    'transformers',
-    'wordcloud',
-]
+dependencies = [ "ffmpeg-binaries", "ipywidgets", "IProgress", "json_repair", "markdown-it-py", "matplotlib", "mdit_plain", "names_generator", "numpy", "openai", "pandas", "plotly", "polars", "pydub", "python-docx", "python-dotenv", "pyarrow", "scikit-learn", "seaborn", "transformers", "wordcloud",]
+[[project.authors]]
+name = "Konrad Jelen <konrad.jelen@gmail.com>"
+
+[project.license]
+text = ""
 
 [tool.setuptools]
-include-package-data = true # default value
+include-package-data = true
 
 [tool.setuptools.packages.find]
-where = ["src"]
-exclude = ["tests"]
-namespaces = true # default value is true
-
-# EOF
+where = [ "src",]
+exclude = [ "tests",]
+namespaces = true
