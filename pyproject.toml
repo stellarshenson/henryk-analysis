@@ -16,20 +16,23 @@ license = {text = ""}
 
 requires-python = ">=3.10"
 dependencies = [
-    'pydub',
-    'pandas',
-    'polars',
     'ffmpeg-binaries',
+    'json_repair',
+    'markdown-it-py',
     'matplotlib',
-    'scikit-learn',
+    'mdit_plain',
+    'names_generator',
     'numpy',
+    'openai',
+    'pandas',
+    'plotly',
+    'polars',
+    'pydub',
     'python-docx',
     'python-dotenv',
-    'openai',
-    'markdown-it-py',
-    'mdit_plain',
-    'json_repair',
-    'names_generator',
+    'scikit-learn',
+    'seaborn',
+    'transformers',
     'wordcloud',
 ]
 

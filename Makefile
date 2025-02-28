@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3 test
+.PHONY: clean data lint requirements build sync_data_to_s3 sync_data_from_s3 sync test
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -9,15 +9,41 @@ BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
 PROFILE = default
 PROJECT_NAME = henryk-analysis
 MODULE_NAME = lib_henryk
+CONDA_FLAGS= --no-capture-output
+CONDA_ENV_NAME = henryk
 PYTHON_INTERPRETER = python3
+PYTHON3_VERSION= 3.11
 
+#################################################################################
+# TESTS                                                                         #
+#################################################################################
+
+# styles and colors
+MSG_PREFIX = \033[1m\033[36m>>>\033[0m
+WARN_PREFIX = \033[33m>>>\033[0m
+ERR_PREFIX = \033[31m>>>\033[0m
+WARN_STYLE = \033[33m
+ERR_STYLE = \033[31m
+HIGHLIGHT_STYLE = \033[1m\033[94m
+OK_STYLE = \033[92m
+NO_STYLE = \033[0m
+
+# additional settings
+CLEAN_REMOVES_LIBRARY = False
+
+# checks if conda is present
 ifeq (,$(shell which conda))
 HAS_CONDA=False
 else
 HAS_CONDA=True
 endif
 
-PYTHON3_VERSION=3.11
+# checks if environment was installed
+ifeq (,$(shell conda env list | grep $(PROJECT_NAME)))
+HAS_CONDA_ENV=False
+else
+HAS_CONDA_ENV=True
+endif
 
 
 #################################################################################
@@ -25,33 +51,15 @@ PYTHON3_VERSION=3.11
 #################################################################################
 
 ## Install Python Dependencies
-requirements: test_environment
-	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
-	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
+requirements: test_environment check_conda
+	@echo "${MSG_PREFIX} installing requirements for  ${HIGHLIGHT_STYLE}${CONDA_ENV_NAME}${NO_STYLE} environment"
+	conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} $(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
+	conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} $(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 
 ## Make Dataset
-data: requirements
-	$(PYTHON_INTERPRETER) src/lib_henryk/data/make_dataset.py data/raw data/processed
-
-## Delete all compiled Python files
-clean:
-	@echo "removing cache and compiled files"
-	@find . -type f -name "*.py[co]" -delete
-	@find . -type d -name "__pycache__" -delete
-	@rm -rf `find . -type d -name "*.egg-info"`
-	@echo "removing dist and build directory"
-	@rm -rf build dist
-	@echo 'uninstalling local library'
-	@pip uninstall -y $(MODULE_NAME)
-
-## Lint using flake8
-lint:
-	flake8 src
-
-## Run python tests
-test:
-	@echo "executing python tests"
-	pytest -v
+data: requirements check_conda
+	@echo "${MSG_PREFIX} generating dataset"
+	conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} $(PYTHON_INTERPRETER) src/${MODULE_NAME}/data/make_dataset.py data/raw data/processed
 
 ## Upload Data to S3
 sync_data_to_s3:
@@ -69,88 +77,109 @@ else
 	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
 endif
 
-
-## Set up python interpreter environment
-create_environment:
-ifeq (True,$(HAS_CONDA))
-	@echo ">>> Detected conda, creating conda environment."
-	conda create -y --name $(PROJECT_NAME) python=$(PYTHON3_VERSION) ipykernel
-	@echo ">>> Installing environment packages from environment.yml
-	conda env update -n $(PROJECT_NAME) -f ./environment.yml
-	@echo ">>> New conda env created. Activate with:\nconda activate $(PROJECT_NAME)"
+## Upload runtime data to s3
+sync: 
+	@echo "${MSG_PREFIX} sync artifacts and models to s3"
+ifeq (default,$(PROFILE))
+	aws s3 rm s3://$(BUCKET)/artifacts/ --recursive --include='*'
+	aws s3 sync models/ s3://$(BUCKET)/models/
+	aws s3 sync artifacts s3://$(BUCKET)/artifacts/
 else
-	$(PYTHON_INTERPRETER) -m pip install -q virtualenv virtualenvwrapper
-	@echo ">>> Installing virtualenvwrapper if not already installed.\nMake sure the following lines are in shell startup file\n\
-	export WORKON_HOME=$$HOME/.virtualenvs\nexport PROJECT_HOME=$$HOME/Devel\nsource /usr/local/bin/virtualenvwrapper.sh\n"
-	@bash -c "source `which virtualenvwrapper.sh`;mkvirtualenv $(PROJECT_NAME) --python=$(PYTHON_INTERPRETER)"
-	@echo ">>> New virtualenv created. Activate with:\nworkon $(PROJECT_NAME)"
+	aws s3 rm s3://$(BUCKET)/artifacts/ --recursive --include='*' --profile $(PROFILE)
+	aws s3 sync models/ s3://$(BUCKET)/models/ --profile $(PROFILE)
+	aws s3 sync artifacts s3://$(BUCKET)/artifacts/ --profile $(PROFILE)
+endif
+
+
+# Set up python interpreter environment
+create_environment: check_conda
+ifeq (True,$(HAS_CONDA))
+	@echo "${MSG_PREFIX} detected conda. Checking if environment ${CONDA_ENV_NAME} exists."
+	@if conda info --envs | grep -q "^${CONDA_ENV_NAME}"; then \
+		echo "${MSG_PREFIX} conda environment ${CONDA_ENV_NAME} already exists. Skipping creation."; \
+	else \
+		echo "${MSG_PREFIX} creating new conda environment ${HIGHLIGHT_STYLE}${CONDA_ENV_NAME}${NO_STYLE}"; \
+		conda create -y --name ${CONDA_ENV_NAME} python=${PYTHON3_VERSION}; \
+		conda env update --name ${CONDA_ENV_NAME} -f environment.yml; \
+ 		echo "${MSG_PREFIX} new conda env created successfully. Activate with: ${HIGHLIGHT_STYLE}conda activate ${CONDA_ENV_NAME}${NO_STYLE}"; \
+	        conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} nbdime config-git --enable --global; \
+ 		echo "${MSG_PREFIX} environment ${CONDA_ENV_NAME} was configured to integrate git with jupyter notebooks"; \
+	fi
 endif
 
 ## Remove previously created environment
-remove_environment:
+remove_environment: check_conda
 ifeq (True,$(HAS_CONDA))
-	@echo ">>> Detected conda, removing conda environment."
-	conda env remove -y -n $(PROJECT_NAME)
+	@echo "${MSG_PREFIX} detected conda, removing ${HIGHLIGHT_STYLE}${CONDA_ENV_NAME}${NO_STYLE} conda environment."
+	conda run --name base conda env remove -y -n ${CONDA_ENV_NAME}
 endif
 
+# check conda
+check_conda:
+ifeq (False,$(HAS_CONDA))
+	@echo "${ERR_PREFIX} ${ERR_STYLE}ERROR: conda not installed${NO_STYLE}"
+	@echo "${ERR_PREFIX} ${ERR_STYLE}install anaconda or miniforge from https://github.com/conda-forge/miniforge${NO_STYLE}"
+	@exit 1
+endif
+
+
 ## Test python environment is setup correctly
-test_environment:
-	$(PYTHON_INTERPRETER) test_environment.py
+test_environment: check_conda
+	@echo "${MSG_PREFIX} testing environment ${HIGHLIGHT_STYLE}${CONDA_ENV_NAME}${NO_STYLE} if ready"
+	conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} $(PYTHON_INTERPRETER) test_environment.py
 
 #################################################################################
 # PROJECT RULES                                                                 #
 #################################################################################
 
-## print project libraries used by the scripts 
-list_requirements:
-	# get list of immediate requirements
-	@pipreqs --mode no-pin --print | tr -cd '[:alnum:].[:space:]._-' | uniq > pipreqs.tmp
-	# add pipreqs to the list (to make it possible to run virtual env)
-	@echo 'pipreqs' >> pipreqs.tmp
-	# list all pip packages along their version
-	@pip list --format=freeze > pipfreeze.tmp
-	# join the reqs and the pip list
-	@awk -F"==" 'FNR==NR {dict[$$1]=$$1; next} {if (dict[$$1] != "") print $$0}' pipreqs.tmp pipfreeze.tmp
-	@rm pipfreeze.tmp pipreqs.tmp
-
-## saves conda environment to environment.yml
-save_environment:
-	# saving environment to environment.yml ...
-	@conda env -n $(PROJECT_NAME) export > environment.yml
-	# updating the requirements.txt file ...
-	@cat environment.yml \
-		| awk '/pip:/,EOF' \
-		| grep --invert-match 'pip:' \
-		| grep --invert-match 'prefix:' \
-		| sed 's/^ *- //g' > requirements.txt
-	@echo "saved" `cat requirements.txt | awk 'END{print NR}'` "packages" 
-
-
-## Install src modules folder and its dependencies
-install:
-	@pip install --editable .
-	@echo "you can now import '$(MODULE_NAME)' module in your notebooks and scripts"
-
+## Delete all compiled Python files
+clean: check_conda
+	@echo "${MSG_PREFIX} removing cache and compiled files"
+	@find . -type f -name "*.py[co]" -delete
+	@find . -type d -name '__pycache__' -exec rm -r {} +
+	@find . -type d -name '*.egg-info'  -exec rm -r {} +
+	@find . -type d -name '.ipynb_checkpoints' -exec rm -r {} +
+	@find . -type d -name '.pytest_cache' -exec rm -r {} +
+	@echo "${MSG_PREFIX} removing dist and build directory"
+	@rm -rf build dist
+ifeq (True,$(CLEAN_REMOVES_LIBRARY))
+	@echo "${MSG_PREFIX} uninstalling ${MODULE_NAME} library"
+	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} pip uninstall -y $(MODULE_NAME) || true
+endif
 
 ## Install src modules without dependencies
-install_no_dependencies:
-	@pip install --no-dependencies --editable .
-	@echo "you can now import '$(MODULE_NAME)' module in your notebooks and scripts"
-
-
-## Install project and dependencies in the current environment
-install_all:
-	# install requirements
-	@conda env update -f ./environment.yml
-	@echo "project deployment dependencies have been installed"
-	@echo "you can now import '$(MODULE_NAME)' module in your notebooks and scripts"
-
+install: check_conda clean create_environment
+	@echo "${MSG_PREFIX} installing ${MODULE_NAME} in the ${CONDA_ENV_NAME} environment ${OK_STYLE}EDITABLE${NO_STYLE}"
+	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} pip install --editable .
+	@echo "${MSG_PREFIX} fixing issues with jupyterlab 'jump to definition' by installing package in (base)"
+	@conda run --name base pip install --no-dependencies --editable .
+	@echo "${MSG_PREFIX} you can now import ${HIGHLIGHT_STYLE}$(MODULE_NAME)${NO_STYLE} module in your notebooks and scripts\n"
 
 ## Build package & install
-build: test
-	python -m build --wheel
-	@echo "installing project library: $(find ./dist -name '*.whl')"
-	@pip install `find ./dist -name '*.whl'`
+build: check_conda pyproject.toml install test increment_build_number
+	@echo "${MSG_PREFIX} building ${MODULE_NAME}" 
+	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} ${PYTHON_INTERPRETER} -m build --wheel
+
+# Increment build number
+increment_build_number: check_conda
+	@echo "${MSG_PREFIX} incrementing build number"
+	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} ${PYTHON_INTERPRETER} -c "import toml; data=toml.load('pyproject.toml'); ver=data['project']['version'].split('.'); ver[-1]=str(int(ver[-1])+1); data['project']['version']='.'.join(ver); f=open('pyproject.toml','w'); toml.dump(data,f); f.close(); print('New version:',data['project']['version'])"
+
+## Lint using flake8
+lint: check_conda
+	@echo "${MSG_PREFIX} linting the sourcecode"
+	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} flake8 src
+
+## Run python tests
+test: check_conda
+	@echo "${MSG_PREFIX} checking for tests"
+	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} pytest --collect-only > /dev/null 2>&1; RESULT="$$?"; \
+	if [ "$$RESULT" != "5" ]; then \
+		echo "${MSG_PREFIX} executing python tests"; \
+		conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} pytest -v --cov; \
+	else \
+		echo "${WARN_PREFIX} ${WARN_STYLE}WARNING: no tests present${NO_STYLE}"; \
+	fi
 
 #################################################################################
 # Self Documenting Commands                                                     #
@@ -217,3 +246,4 @@ help:
 
 
 # EOF
+
