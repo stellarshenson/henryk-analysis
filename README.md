@@ -16,7 +16,7 @@ This project also serves a therapeutic purpose for me. As I wait for the court s
 My heart aches at the thought of this, but then I focus on building. I build my life, my career, and great technologies. This project is built with the hope that one day I will be able to share it with him and see him smile.
 
 ## Project Focus
-This project revolves around over 500+ audio recordings that I have made for my son, and I continue to make more. These recordings are my way of trying to connect with him and let him hear my voice. In these recordings, I share stories from my life, our family, friends, and various topics like animals, phenomena, stars, nature, and more. My hope is that one day he will discover these recordings and embark on a journey to learn about his father.
+This project revolves around over 700+ audio recordings (almost 200 hours) that I have made for my son, and I continue to make more. These recordings are my way of trying to connect with him and let him hear my voice. In these recordings, I share stories from my life, our family, friends, and various topics like animals, phenomena, stars, nature, and more. My hope is that one day he will discover these recordings and embark on a journey to learn about his father.
 
 The recordings are processed, information is extracted, and they will be delivered through various channels such as text, videos, and stories. These may eventually reach my son despite the current barriers of fear and hatred.
 
