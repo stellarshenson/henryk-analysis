@@ -20,7 +20,6 @@ dependencies = [
     # core
     "colorama",
     "loguru",
-    "tqdm",
     "typer",
     "python-dotenv",
     # data processing
@@ -28,9 +27,8 @@ dependencies = [
     "pandas",
     "polars",
     "pyarrow",
-    # audio processing
-    "pydub",
-    "ffmpeg-binaries",
+    # audio metadata (pure Python)
+    "mutagen",
     # AI/NLP
     "openai",
     "transformers",
@@ -50,6 +48,7 @@ dependencies = [
     "names_generator",
     "ipywidgets",
     "IProgress",
+    "rich",
 ]
 
 [project.optional-dependencies]
@@ -63,7 +62,6 @@ dev = [
     "mkdocs",
     "pytest",
     "pytest-cov",
-    "rich",
     "ruff",
     "toml",
 ]

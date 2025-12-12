@@ -349,22 +349,6 @@ wheels = [
 ]
 
 [[package]]
-name = "ffmpeg-binaries"
-version = "1.0.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "patool" },
-    { name = "requests" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/0a/73/98bef219b81da1de44ece0cff03d28f11b5df7d1ab8af00b24608c32ab7d/ffmpeg_binaries-1.0.1.tar.gz", hash = "sha256:2c5b123956860521460078b2b5b0ae34f83fc0cd68b792a4df89e97f4d6a9d78", size = 7321, upload-time = "2025-03-30T19:06:27.455Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/2d/26/9949a715134ef1bc6972adf406ce7e14cc5f6288eccfd7125a5846d59c71/ffmpeg_binaries-1.0.1-py3-none-any.whl", hash = "sha256:820255d74d7597d390ac5760cc0c552d283500c9d1e982838a9a0ac27361f1ce", size = 9064, upload-time = "2025-03-30T19:05:53.384Z" },
-    { url = "https://files.pythonhosted.org/packages/48/3e/4a40ac2c8ca6007b29e3dc412791b2915a36aa0e1e6a80ea4ec10958b463/ffmpeg_binaries-1.0.1-py3-none-macosx_10_13_universal2.whl", hash = "sha256:2e0fccfecc35f88bd626eca19c866574d9118f50399a07f9c8df23b249001bfc", size = 50288531, upload-time = "2025-03-30T19:05:55.688Z" },
-    { url = "https://files.pythonhosted.org/packages/e8/e9/4aa42c957ee81e54eb2385e1199303e25f275dc42963e0e98c0f5f031416/ffmpeg_binaries-1.0.1-py3-none-manylinux1_x86_64.whl", hash = "sha256:e27f2fed8e798ae33e8e749650d9c396f51f1caac57589568664208329933d4e", size = 60252250, upload-time = "2025-03-30T19:05:59.683Z" },
-    { url = "https://files.pythonhosted.org/packages/57/cc/0d76971e84db565e2edba568bc785cb7321c31932ce640d1ac499b985231/ffmpeg_binaries-1.0.1-py3-none-win_amd64.whl", hash = "sha256:da3d6a528fe2e4fe3e4831486a37d59cb5a1e586d513ef7556622db1f9b4711f", size = 88793328, upload-time = "2025-03-30T19:06:08.734Z" },
-]
-
-[[package]]
 name = "filelock"
 version = "3.20.0"
 source = { registry = "https://pypi.org/simple" }
@@ -889,7 +873,6 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "colorama" },
-    { name = "ffmpeg-binaries" },
     { name = "iprogress" },
     { name = "ipywidgets" },
     { name = "json-repair" },
@@ -897,6 +880,7 @@ dependencies = [
     { name = "markdown-it-py" },
     { name = "matplotlib" },
     { name = "mdit-plain" },
+    { name = "mutagen" },
     { name = "names-generator" },
     { name = "numpy" },
     { name = "openai" },
@@ -904,12 +888,11 @@ dependencies = [
     { name = "plotly" },
     { name = "polars" },
     { name = "pyarrow" },
-    { name = "pydub" },
     { name = "python-docx" },
     { name = "python-dotenv" },
+    { name = "rich" },
     { name = "scikit-learn" },
     { name = "seaborn" },
-    { name = "tqdm" },
     { name = "transformers" },
     { name = "typer" },
     { name = "wordcloud" },
@@ -926,7 +909,6 @@ dev = [
     { name = "pip" },
     { name = "pytest" },
     { name = "pytest-cov" },
-    { name = "rich" },
     { name = "ruff" },
     { name = "toml" },
 ]
@@ -936,7 +918,6 @@ requires-dist = [
     { name = "build", marker = "extra == 'dev'" },
     { name = "click", marker = "extra == 'dev'" },
     { name = "colorama" },
-    { name = "ffmpeg-binaries" },
     { name = "iprogress" },
     { name = "ipykernel", marker = "extra == 'dev'" },
     { name = "ipython", marker = "extra == 'dev'", specifier = "<9" },
@@ -947,6 +928,7 @@ requires-dist = [
     { name = "matplotlib" },
     { name = "mdit-plain" },
     { name = "mkdocs", marker = "extra == 'dev'" },
+    { name = "mutagen" },
     { name = "names-generator" },
     { name = "nbdime", marker = "extra == 'dev'" },
     { name = "numpy" },
@@ -956,17 +938,15 @@ requires-dist = [
     { name = "plotly" },
     { name = "polars" },
     { name = "pyarrow" },
-    { name = "pydub" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "pytest-cov", marker = "extra == 'dev'" },
     { name = "python-docx" },
     { name = "python-dotenv" },
-    { name = "rich", marker = "extra == 'dev'" },
+    { name = "rich" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "scikit-learn" },
     { name = "seaborn" },
     { name = "toml", marker = "extra == 'dev'" },
-    { name = "tqdm" },
     { name = "transformers" },
     { name = "typer" },
     { name = "wordcloud" },
@@ -1162,6 +1142,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/98/f5/ed29cd50067784976f25ed0ed6fcd3c2ce9eb90650aa3b2796ddf7b6870b/mkdocs_get_deps-0.2.0.tar.gz", hash = "sha256:162b3d129c7fad9b19abfdcb9c1458a651628e4b1dea628ac68790fb3061c60c", size = 10239, upload-time = "2023-11-20T17:51:09.981Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9f/d4/029f984e8d3f3b6b726bd33cafc473b75e9e44c0f7e80a5b29abc466bdea/mkdocs_get_deps-0.2.0-py3-none-any.whl", hash = "sha256:2bf11d0b133e77a0dd036abeeb06dec8775e46efa526dc70667d8863eefc6134", size = 9521, upload-time = "2023-11-20T17:51:08.587Z" },
+]
+
+[[package]]
+name = "mutagen"
+version = "1.47.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/81/e6/64bc71b74eef4b68e61eb921dcf72dabd9e4ec4af1e11891bbd312ccbb77/mutagen-1.47.0.tar.gz", hash = "sha256:719fadef0a978c31b4cf3c956261b3c58b6948b32023078a2117b1de09f0fc99", size = 1274186, upload-time = "2023-09-03T16:33:33.411Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b0/7a/620f945b96be1f6ee357d211d5bf74ab1b7fe72a9f1525aafbfe3aee6875/mutagen-1.47.0-py3-none-any.whl", hash = "sha256:edd96f50c5907a9539d8e5bba7245f62c9f520aef333d13392a79a4f70aca719", size = 194391, upload-time = "2023-09-03T16:33:29.955Z" },
 ]
 
 [[package]]
@@ -1362,15 +1351,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ca/bc/f35b8446f4531a7cb215605d100cd88b7ac6f44ab3fc94870c120ab3adbf/pathspec-0.12.1.tar.gz", hash = "sha256:a482d51503a1ab33b1c67a6c3813a26953dbdc71c31dacaef9a838c4e29f5712", size = 51043, upload-time = "2023-12-10T22:30:45Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/cc/20/ff623b09d963f88bfde16306a54e12ee5ea43e9b597108672ff3a408aad6/pathspec-0.12.1-py3-none-any.whl", hash = "sha256:a0d503e138a4c123b27490a4f7beda6a01c6f288df0e4a8b79c7eb0dc7b4cc08", size = 31191, upload-time = "2023-12-10T22:30:43.14Z" },
-]
-
-[[package]]
-name = "patool"
-version = "4.0.3"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/84/6a/d8cc4ee61e6cc066a0c8d4ef2118c5fbf4d8e3ad8ee94192cc097749ae8a/patool-4.0.3.tar.gz", hash = "sha256:d7e3d3b69857edd4441061e27254ff1761c9e7a0627562be9eb1fc90cc08770f", size = 2009846, upload-time = "2025-12-11T18:17:33.53Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/cc/89/9db065f71e53910dc1de6694b817b226d113be33089e65bba6641939bc1b/patool-4.0.3-py2.py3-none-any.whl", hash = "sha256:b688801314a1deea00d60853418ab5892084a053a8cbf3a5730e1200a8ad65f7", size = 88393, upload-time = "2025-12-11T18:17:29.574Z" },
 ]
 
 [[package]]
@@ -1589,15 +1569,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/aa/81/05e400037eaf55ad400bcd318c05bb345b57e708887f07ddb2d20e3f0e98/pydantic_core-2.41.5-graalpy312-graalpy250_312_native-macosx_11_0_arm64.whl", hash = "sha256:aabf5777b5c8ca26f7824cb4a120a740c9588ed58df9b2d196ce92fba42ff8dc", size = 1915388, upload-time = "2025-11-04T13:42:52.215Z" },
     { url = "https://files.pythonhosted.org/packages/6e/0d/e3549b2399f71d56476b77dbf3cf8937cec5cd70536bdc0e374a421d0599/pydantic_core-2.41.5-graalpy312-graalpy250_312_native-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c007fe8a43d43b3969e8469004e9845944f1a80e6acd47c150856bb87f230c56", size = 1942879, upload-time = "2025-11-04T13:42:56.483Z" },
     { url = "https://files.pythonhosted.org/packages/f7/07/34573da085946b6a313d7c42f82f16e8920bfd730665de2d11c0c37a74b5/pydantic_core-2.41.5-graalpy312-graalpy250_312_native-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:76d0819de158cd855d1cbb8fcafdf6f5cf1eb8e470abe056d5d161106e38062b", size = 2139017, upload-time = "2025-11-04T13:42:59.471Z" },
-]
-
-[[package]]
-name = "pydub"
-version = "0.25.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fe/9a/e6bca0eed82db26562c73b5076539a4a08d3cffd19c3cc5913a3e61145fd/pydub-0.25.1.tar.gz", hash = "sha256:980a33ce9949cab2a569606b65674d748ecbca4f0796887fd6f46173a7b0d30f", size = 38326, upload-time = "2021-03-10T02:09:54.659Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a6/53/d78dc063216e62fc55f6b2eebb447f6a4b0a59f55c8406376f76bf959b08/pydub-0.25.1-py2.py3-none-any.whl", hash = "sha256:65617e33033874b59d87db603aa1ed450633288aefead953b30bded59cb599a6", size = 32327, upload-time = "2021-03-10T02:09:53.503Z" },
 ]
 
 [[package]]

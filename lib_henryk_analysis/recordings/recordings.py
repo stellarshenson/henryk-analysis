@@ -12,11 +12,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.lines import Line2D
-from pydub.utils import mediainfo
-from tqdm.autonotebook import tqdm
+from mutagen import File as MutagenFile
+from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
 from lib_henryk_analysis import utils
-from lib_henryk_analysis.config import DIR_RECORDINGS, TQDM_PARAMS
+from lib_henryk_analysis.config import DIR_RECORDINGS
 from lib_henryk_analysis.logger import logger
 
 
@@ -73,14 +73,20 @@ def get_recordings_info(path_recordings: str | Path) -> pd.DataFrame:
         }
     )
 
-    with tqdm(
-        desc=f"processing {len(files_m4a)} audio files", total=len(files_m4a), **TQDM_PARAMS
-    ) as pbar:
+    with Progress(
+        SpinnerColumn(style="green"),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(complete_style="green", finished_style="bright_green"),
+        TextColumn("[green]{task.percentage:>3.0f}%[/green]"),
+        TextColumn("({task.completed}/{task.total})"),
+        TimeElapsedColumn(),
+    ) as progress:
+        task = progress.add_task(f"Processing audio files", total=len(files_m4a))
         for f in files_m4a:
             audio_recording_info = get_audio_file_info(recording_file_path=f)
             if audio_recording_info is not None:
                 df.loc[len(df)] = audio_recording_info
-            pbar.update()
+            progress.update(task, advance=1)
 
     df = df.sort_values(by="date")
     df = df.reset_index(drop=True)
@@ -90,20 +96,33 @@ def get_recordings_info(path_recordings: str | Path) -> pd.DataFrame:
 
 
 def get_audio_file_info(recording_file_path: str) -> dict | None:
-    """Get info from a file and process into a dictionary."""
+    """Get info from a file and process into a dictionary.
+
+    Uses mutagen (pure Python) for audio metadata extraction.
+    Supports m4a, mp4, mp3, and other common audio formats.
+    """
     try:
-        _info = mediainfo(recording_file_path)
+        audio = MutagenFile(recording_file_path)
+        if audio is None:
+            logger.warning(f"mutagen could not read file: {recording_file_path}")
+            return None
+
         _filename = os.path.basename(recording_file_path)
         _filename_regex_groups = re.search(
             r"^(.+) (\d+-\d+-\d+) (.+)\.(.+)$", _filename
         )
+
+        if _filename_regex_groups is None:
+            logger.warning(f"filename does not match expected pattern: {_filename}")
+            return None
+
         _recording_kind = _filename_regex_groups[1]
         _recording_date = _filename_regex_groups[2]
         _recording_date = datetime.strptime(_recording_date, "%Y-%m-%d")
         _recording_name = ".".join(_filename.split(".")[:-1])
         _recording_title = _filename_regex_groups[3]
         _recording_type = _filename_regex_groups[4]
-        _recording_duration = _info["duration"]
+        _recording_duration = audio.info.length  # duration in seconds
 
         return {
             "file": _filename,
