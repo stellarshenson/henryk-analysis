@@ -1,23 +1,89 @@
 [build-system]
-requires = [ "setuptools", "wheel",]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lib_henryk"
-version = "0.4"
-description = "Henryk content creation and analysis"
-requires-python = ">=3.10"
-dependencies = [ "ffmpeg-binaries", "ipywidgets", "IProgress", "json_repair", "markdown-it-py", "matplotlib", "mdit_plain", "names_generator", "numpy", "openai", "pandas", "plotly", "polars", "pydub", "python-docx", "python-dotenv", "pyarrow", "scikit-learn", "seaborn", "transformers", "wordcloud",]
-[[project.authors]]
-name = "Konrad Jelen <konrad.jelen@gmail.com>"
+name = "lib_henryk_analysis"
+version = "0.1.0"
+description = "Project dedicated to the analysis and processing of various content related to my son and him being alienaded from me (his father). This is a Hope project, to help me win my son back and help us maintain connection"
+authors = [
+    { name = "Konrad Jelen" },
+]
+license = "MIT"
+readme = "README.md"
+requires-python = "~=3.12.0"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
 
-[project.license]
-text = ""
+dependencies = [
+    # core
+    "colorama",
+    "loguru",
+    "tqdm",
+    "typer",
+    "python-dotenv",
+    # data processing
+    "numpy",
+    "pandas",
+    "polars",
+    "pyarrow",
+    # audio processing
+    "pydub",
+    "ffmpeg-binaries",
+    # AI/NLP
+    "openai",
+    "transformers",
+    "json_repair",
+    # visualization
+    "matplotlib",
+    "seaborn",
+    "plotly",
+    "wordcloud",
+    # documents
+    "python-docx",
+    "markdown-it-py",
+    "mdit_plain",
+    # ML
+    "scikit-learn",
+    # utilities
+    "names_generator",
+    "ipywidgets",
+    "IProgress",
+]
+
+[project.optional-dependencies]
+dev = [
+    "build",
+    "click",
+    "ipykernel",
+    "ipython<9",
+    "nbdime",
+    "pip",
+    "mkdocs",
+    "pytest",
+    "pytest-cov",
+    "rich",
+    "ruff",
+    "toml",
+]
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.packages.find]
-where = [ "src",]
-exclude = [ "tests",]
-namespaces = true
+where = ["."]
+include = ["lib_henryk_analysis*"]
+exclude = ["tests*"]
+
+[tool.ruff]
+line-length = 99
+src = ["lib_henryk_analysis"]
+include = ["pyproject.toml", "lib_henryk_analysis/**/*.py"]
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["lib_henryk_analysis"]
+force-sort-within-sections = true

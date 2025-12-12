@@ -1,24 +1,19 @@
-.PHONY: clean data lint requirements build sync_data_to_s3 sync_data_from_s3 sync test
+.PHONY: clean data lint format requirements upgrade build sync_data_up sync_data_down sync_models_up sync_models_down test docs docs_serve
 
 #################################################################################
 # GLOBALS                                                                       #
 #################################################################################
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
-PROFILE = default
 PROJECT_NAME = henryk-analysis
-MODULE_NAME = lib_henryk
-CONDA_FLAGS= --no-capture-output
-CONDA_ENV_NAME = henryk
-PYTHON_INTERPRETER = python3
-PYTHON3_VERSION= 3.11
+MODULE_NAME = lib_henryk_analysis
+PYTHON_VERSION = 3.12
+PYTHON_INTERPRETER = python
 
 #################################################################################
-# TESTS                                                                         #
+# STYLES                                                                        #
 #################################################################################
 
-# styles and colors
 MSG_PREFIX = \033[1m\033[36m>>>\033[0m
 WARN_PREFIX = \033[33m>>>\033[0m
 ERR_PREFIX = \033[31m>>>\033[0m
@@ -28,158 +23,150 @@ HIGHLIGHT_STYLE = \033[1m\033[94m
 OK_STYLE = \033[92m
 NO_STYLE = \033[0m
 
-# additional settings
-CLEAN_REMOVES_LIBRARY = False
+#################################################################################
+# ENVIRONMENT CONFIGURATION                                                     #
+#################################################################################
 
-# checks if conda is present
-ifeq (,$(shell which conda))
-HAS_CONDA=False
-else
-HAS_CONDA=True
-endif
-
-# checks if environment was installed
-ifeq (,$(shell conda env list | grep $(PROJECT_NAME)))
-HAS_CONDA_ENV=False
-else
-HAS_CONDA_ENV=True
-endif
-
+# unified environment name for all managers
+ENV_NAME = henryk
+# uv configuration
+VENV_PATH = $(PROJECT_DIR)/.venv
 
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
+## Install Python dependencies
+.PHONY: requirements
+requirements:
+	@echo "$(MSG_PREFIX) installing requirements with uv"
+	uv sync --python $(PROJECT_DIR)/.venv --extra dev
+## Upgrade Python dependencies to latest versions
+.PHONY: upgrade
+upgrade:
+	@echo "$(MSG_PREFIX) upgrading packages with uv"
+	uv sync --python $(PROJECT_DIR)/.venv --extra dev --upgrade
 
-## Install Python Dependencies
-requirements: test_environment check_conda
-	@echo "${MSG_PREFIX} installing requirements for  ${HIGHLIGHT_STYLE}${CONDA_ENV_NAME}${NO_STYLE} environment"
-	conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} $(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
-	conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} $(PYTHON_INTERPRETER) -m pip install -r requirements.txt
+## Delete all compiled Python files
+clean:
+	@echo "$(MSG_PREFIX) removing cache and compiled files"
+	@find . -type f -name "*.py[co]" -delete
+	@find . -type d -name '__pycache__' -exec rm -r {} +
+	@find . -type d -name '*.egg-info' -exec rm -r {} +
+	@find . -type d -name '.ipynb_checkpoints' -exec rm -r {} +
+	@find . -type d -name '.pytest_cache' -exec rm -r {} +
+	@echo "$(MSG_PREFIX) removing dist and build directory"
+	@rm -rf build dist
 
-## Make Dataset
-data: requirements check_conda
-	@echo "${MSG_PREFIX} generating dataset"
-	conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} $(PYTHON_INTERPRETER) src/${MODULE_NAME}/data/make_dataset.py data/raw data/processed
-
-## Upload Data to S3
-sync_data_to_s3:
-ifeq (default,$(PROFILE))
-	aws s3 sync data/ s3://$(BUCKET)/data/
-else
-	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE)
-endif
-
-## Download Data from S3
-sync_data_from_s3:
-ifeq (default,$(PROFILE))
-	aws s3 sync s3://$(BUCKET)/data/ data/
-else
-	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
-endif
-
-## Upload runtime data to s3
-sync: 
-	@echo "${MSG_PREFIX} sync artifacts and models to s3"
-ifeq (default,$(PROFILE))
-	aws s3 rm s3://$(BUCKET)/artifacts/ --recursive --include='*'
-	aws s3 sync models/ s3://$(BUCKET)/models/
-	aws s3 sync artifacts s3://$(BUCKET)/artifacts/
-else
-	aws s3 rm s3://$(BUCKET)/artifacts/ --recursive --include='*' --profile $(PROFILE)
-	aws s3 sync models/ s3://$(BUCKET)/models/ --profile $(PROFILE)
-	aws s3 sync artifacts s3://$(BUCKET)/artifacts/ --profile $(PROFILE)
-endif
-
-
-# Set up python interpreter environment
-create_environment: check_conda
-ifeq (True,$(HAS_CONDA))
-	@echo "${MSG_PREFIX} detected conda. Checking if environment ${CONDA_ENV_NAME} exists."
-	@if conda info --envs | grep -q "^${CONDA_ENV_NAME}"; then \
-		echo "${MSG_PREFIX} conda environment ${CONDA_ENV_NAME} already exists. Skipping creation."; \
+## Restore .env from encrypted .env.enc (or create empty)
+.env:
+	@if [ -f ".env.enc" ]; then \
+		echo "$(MSG_PREFIX) decrypting .env.enc"; \
+		openssl enc -d -aes-256-cbc -pbkdf2 -in .env.enc -out .env || { rm -f .env; echo "$(ERR_PREFIX) $(ERR_STYLE)decryption failed$(NO_STYLE)"; exit 1; }; \
 	else \
-		echo "${MSG_PREFIX} creating new conda environment ${HIGHLIGHT_STYLE}${CONDA_ENV_NAME}${NO_STYLE}"; \
-		conda create -y --name ${CONDA_ENV_NAME} python=${PYTHON3_VERSION}; \
-		conda env update --name ${CONDA_ENV_NAME} -f environment.yml; \
- 		echo "${MSG_PREFIX} new conda env created successfully. Activate with: ${HIGHLIGHT_STYLE}conda activate ${CONDA_ENV_NAME}${NO_STYLE}"; \
-	        conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} nbdime config-git --enable --global; \
- 		echo "${MSG_PREFIX} environment ${CONDA_ENV_NAME} was configured to integrate git with jupyter notebooks"; \
+		echo "$(MSG_PREFIX) creating empty .env"; \
+		touch .env; \
 	fi
-endif
+
+## Encrypt .env to .env.enc (AES-256)
+.env.enc: .env
+	@echo "$(MSG_PREFIX) encrypting .env"
+	@openssl enc -aes-256-cbc -pbkdf2 -in .env -out .env.enc
+	@echo "$(OK_STYLE)>>> .env.enc file successfully created$(NO_STYLE)"
+
+## Lint using ruff (use `make format` to do formatting)
+lint:
+	@echo "$(MSG_PREFIX) linting the sourcecode"
+	ruff format --check
+	ruff check
+
+## Format source code with ruff
+format:
+	@echo "$(MSG_PREFIX) formatting the sourcecode"
+	ruff check --fix
+	ruff format
+## Run tests
+test:
+	@echo "$(MSG_PREFIX) checking for tests"
+	@$(PROJECT_DIR)/.venv/bin/pytest --collect-only ./tests > /dev/null 2>&1; RESULT="$$?"; \
+	if [ "$$RESULT" != "5" ]; then \
+		echo "$(MSG_PREFIX) executing python tests"; \
+		$(PROJECT_DIR)/.venv/bin/pytest --cov -v ./tests; \
+	else \
+		echo "$(WARN_PREFIX) $(WARN_STYLE)WARNING: no tests present$(NO_STYLE)"; \
+	fi
+## Build documentation
+docs:
+	@echo "$(MSG_PREFIX) building documentation"
+	$(PROJECT_DIR)/.venv/bin/mkdocs build -f docs/mkdocs.yml
+
+## Serve documentation locally
+docs_serve:
+	@echo "$(MSG_PREFIX) serving documentation at http://127.0.0.1:8000"
+	$(PROJECT_DIR)/.venv/bin/mkdocs serve -f docs/mkdocs.yml
+#################################################################################
+# UV ENVIRONMENT MANAGEMENT                                                     #
+#################################################################################
+
+## Set up Python interpreter environment
+create_environment:
+	@if [ -d "$(PROJECT_DIR)/.venv" ]; then \
+		echo "$(MSG_PREFIX) virtual environment already exists at $(HIGHLIGHT_STYLE).venv$(NO_STYLE). Skipping creation."; \
+	else \
+		echo "$(MSG_PREFIX) creating uv virtual environment"; \
+		uv venv -q --python $(PYTHON_VERSION); \
+		echo "$(MSG_PREFIX) new uv virtual environment created. Activate with:"; \
+		echo "$(MSG_PREFIX) Windows: $(HIGHLIGHT_STYLE).\\\.venv\\\Scripts\\\activate$(NO_STYLE)"; \
+		echo "$(MSG_PREFIX) Unix/macOS: $(HIGHLIGHT_STYLE)source ./.venv/bin/activate$(NO_STYLE)"; \
+		echo "$(MSG_PREFIX) installing dependencies"; \
+		uv pip install -q --python $(PROJECT_DIR)/.venv -e ".[dev]"; \
+		if command -v nb_venv_kernels >/dev/null 2>&1; then \
+			echo "$(MSG_PREFIX) registering Jupyter kernel for $(HIGHLIGHT_STYLE)$(ENV_NAME)$(NO_STYLE)"; \
+			nb_venv_kernels register --name $(ENV_NAME) $(PROJECT_DIR)/.venv >/dev/null 2>&1; \
+			echo "$(OK_STYLE)>>> Kernel registered successfully$(NO_STYLE)"; \
+		else \
+			echo "$(MSG_PREFIX) registering Jupyter kernel with ipykernel"; \
+			$(PROJECT_DIR)/.venv/bin/python -m ipykernel install --user --name=$(ENV_NAME) --display-name "Python [uv env:$(ENV_NAME)]"; \
+			echo "$(OK_STYLE)>>> Kernel registered as $(ENV_NAME)$(NO_STYLE)"; \
+		fi; \
+	fi
 
 ## Remove previously created environment
-remove_environment: check_conda
-ifeq (True,$(HAS_CONDA))
-	@echo "${MSG_PREFIX} detected conda, removing ${HIGHLIGHT_STYLE}${CONDA_ENV_NAME}${NO_STYLE} conda environment."
-	conda run --name base conda env remove -y -n ${CONDA_ENV_NAME}
-endif
+remove_environment:
+	@echo "$(MSG_PREFIX) removing uv virtual environment at $(HIGHLIGHT_STYLE).venv$(NO_STYLE)"
+	@echo "$(MSG_PREFIX) unregistering Jupyter kernel $(HIGHLIGHT_STYLE)$(ENV_NAME)$(NO_STYLE)"
+	@if command -v nb_venv_kernels >/dev/null 2>&1; then \
+		nb_venv_kernels unregister $(PROJECT_DIR)/.venv >/dev/null 2>&1 || true; \
+	else \
+		jupyter kernelspec uninstall -y $(ENV_NAME) >/dev/null 2>&1 || true; \
+	fi
+	@-rm -rf ~/.local/share/jupyter/kernels/$(ENV_NAME) 2>/dev/null || true
+	@rm -rf $(PROJECT_DIR)/.venv
+	@echo "$(OK_STYLE)>>> Environment removed$(NO_STYLE)"
 
-# check conda
-check_conda:
-ifeq (False,$(HAS_CONDA))
-	@echo "${ERR_PREFIX} ${ERR_STYLE}ERROR: conda not installed${NO_STYLE}"
-	@echo "${ERR_PREFIX} ${ERR_STYLE}install anaconda or miniforge from https://github.com/conda-forge/miniforge${NO_STYLE}"
-	@exit 1
-endif
+## Install src modules (editable)
+install: create_environment requirements clean .env
 
+	@echo "$(MSG_PREFIX) installing $(MODULE_NAME) in editable mode"
+	@uv pip install -q --python $(PROJECT_DIR)/.venv -e .
+	@echo "$(OK_STYLE)>>> $(MODULE_NAME) installed$(NO_STYLE)"
 
-## Test python environment is setup correctly
-test_environment: check_conda
-	@echo "${MSG_PREFIX} testing environment ${HIGHLIGHT_STYLE}${CONDA_ENV_NAME}${NO_STYLE} if ready"
-	conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} $(PYTHON_INTERPRETER) test_environment.py
+## Build package
+build: clean install test increment_build_number
+	@echo "$(MSG_PREFIX) building $(MODULE_NAME)"
+	$(PROJECT_DIR)/.venv/bin/python -m build --wheel
+
+## Increment build number
+increment_build_number:
+	@echo "$(MSG_PREFIX) incrementing build number"
+	@$(PROJECT_DIR)/.venv/bin/python -c "import toml; data=toml.load('pyproject.toml'); ver=data['project']['version'].split('.'); ver[-1]=str(int(ver[-1])+1); data['project']['version']='.'.join(ver); f=open('pyproject.toml','w'); toml.dump(data,f); f.close(); print('New version:',data['project']['version'])"
 
 #################################################################################
 # PROJECT RULES                                                                 #
 #################################################################################
-
-## Delete all compiled Python files
-clean: check_conda
-	@echo "${MSG_PREFIX} removing cache and compiled files"
-	@find . -type f -name "*.py[co]" -delete
-	@find . -type d -name '__pycache__' -exec rm -r {} +
-	@find . -type d -name '*.egg-info'  -exec rm -r {} +
-	@find . -type d -name '.ipynb_checkpoints' -exec rm -r {} +
-	@find . -type d -name '.pytest_cache' -exec rm -r {} +
-	@echo "${MSG_PREFIX} removing dist and build directory"
-	@rm -rf build dist
-ifeq (True,$(CLEAN_REMOVES_LIBRARY))
-	@echo "${MSG_PREFIX} uninstalling ${MODULE_NAME} library"
-	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} pip uninstall -y $(MODULE_NAME) || true
-endif
-
-## Install src modules without dependencies
-install: check_conda clean create_environment
-	@echo "${MSG_PREFIX} installing ${MODULE_NAME} in the ${CONDA_ENV_NAME} environment ${OK_STYLE}EDITABLE${NO_STYLE}"
-	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} pip install --editable .
-	@echo "${MSG_PREFIX} fixing issues with jupyterlab 'jump to definition' by installing package in (base)"
-	@conda run --name base pip install --no-dependencies --editable .
-	@echo "${MSG_PREFIX} you can now import ${HIGHLIGHT_STYLE}$(MODULE_NAME)${NO_STYLE} module in your notebooks and scripts\n"
-
-## Build package & install
-build: check_conda pyproject.toml install test increment_build_number
-	@echo "${MSG_PREFIX} building ${MODULE_NAME}" 
-	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} ${PYTHON_INTERPRETER} -m build --wheel
-
-# Increment build number
-increment_build_number: check_conda
-	@echo "${MSG_PREFIX} incrementing build number"
-	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} ${PYTHON_INTERPRETER} -c "import toml; data=toml.load('pyproject.toml'); ver=data['project']['version'].split('.'); ver[-1]=str(int(ver[-1])+1); data['project']['version']='.'.join(ver); f=open('pyproject.toml','w'); toml.dump(data,f); f.close(); print('New version:',data['project']['version'])"
-
-## Lint using flake8
-lint: check_conda
-	@echo "${MSG_PREFIX} linting the sourcecode"
-	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} flake8 src
-
-## Run python tests
-test: check_conda
-	@echo "${MSG_PREFIX} checking for tests"
-	@conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} pytest --collect-only > /dev/null 2>&1; RESULT="$$?"; \
-	if [ "$$RESULT" != "5" ]; then \
-		echo "${MSG_PREFIX} executing python tests"; \
-		conda run --name ${CONDA_ENV_NAME} ${CONDA_FLAGS} pytest -v --cov; \
-	else \
-		echo "${WARN_PREFIX} ${WARN_STYLE}WARNING: no tests present${NO_STYLE}"; \
-	fi
+## Make dataset
+data: requirements
+	@echo "$(MSG_PREFIX) generating dataset"
+	$(PYTHON_INTERPRETER) lib_henryk_analysis/dataset.py
 
 #################################################################################
 # Self Documenting Commands                                                     #
@@ -187,63 +174,19 @@ test: check_conda
 
 .DEFAULT_GOAL := help
 
-# Inspired by <http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html>
-# sed script explained:
-# /^##/:
-# 	* save line in hold space
-# 	* purge line
-# 	* Loop:
-# 		* append newline + line to hold space
-# 		* go to next line
-# 		* if line starts with doc comment, strip comment character off and loop
-# 	* remove target prerequisites
-# 	* append hold space (+ newline) to line
-# 	* replace newline plus comments by `---`
-# 	* print line
-# Separate expressions are necessary because labels cannot be delimited by
-# semicolon; see <http://stackoverflow.com/a/11799865/1968>
-.PHONY: help
+define PRINT_HELP_PYSCRIPT
+import re, sys; \
+lines = sys.stdin.read(); \
+matches = re.findall(r'\n## ([^\n]+)\n(?!\.PHONY)([a-zA-Z_.][a-zA-Z0-9_.-]*):', lines); \
+matches = sorted(matches, key=lambda x: x[1].lower()); \
+print('\nAvailable rules:\n'); \
+print('\n'.join(['\033[36m{:25}\033[0m{}'.format(*reversed(match)) for match in matches])); \
+print()
+endef
+export PRINT_HELP_PYSCRIPT
 
-## prints the list of available commands
+## Print the list of available commands
 help:
-	@echo ""
-	@echo "$$(tput bold)Available rules:$$(tput sgr0)"
-	@sed -n -e "/^## / { \
-		h; \
-		s/.*//; \
-		:doc" \
-		-e "H; \
-		n; \
-		s/^## //; \
-		t doc" \
-		-e "s/:.*//; \
-		G; \
-		s/\\n## /---/; \
-		s/\\n/ /g; \
-		p; \
-	}" ${MAKEFILE_LIST} \
-	| LC_ALL='C' sort --ignore-case \
-	| awk -F '---' \
-		-v ncol=$$(tput cols) \
-		-v indent=19 \
-		-v col_on="$$(tput setaf 6)" \
-		-v col_off="$$(tput sgr0)" \
-	'{ \
-		printf "%s%*s%s ", col_on, -indent, $$1, col_off; \
-		n = split($$2, words, " "); \
-		line_length = ncol - indent; \
-		for (i = 1; i <= n; i++) { \
-			line_length -= length(words[i]) + 1; \
-			if (line_length <= 0) { \
-				line_length = ncol - indent - length(words[i]) - 1; \
-				printf "\n%*s ", -indent, " "; \
-			} \
-			printf "%s ", words[i]; \
-		} \
-		printf "\n"; \
-	}' 
-	@echo ""
-
+	@$(PYTHON_INTERPRETER) -c "$${PRINT_HELP_PYSCRIPT}" < $(MAKEFILE_LIST)
 
 # EOF
-

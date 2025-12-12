@@ -1,0 +1,24 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v1.1.1
+_src_path: https://github.com/stellarshenson/copier-data-science.git
+author_name: Konrad Jelen
+custom_config: ''
+dataset_storage: none
+dependency_file: pyproject.toml
+description: Project dedicated to the analysis and processing of various content related
+    to my son and him being alienaded from me (his father). This is a Hope project,
+    to help me win my son back and help us maintain connection
+docker_support: 'No'
+docs: mkdocs
+env_encryption: 'Yes'
+env_name: henryk
+environment_manager: uv
+include_code_scaffold: 'Yes'
+jupyter_kernel_support: 'Yes'
+linting_and_formatting: ruff
+module_name: lib_henryk_analysis
+open_source_license: MIT
+pydata_packages: none
+python_version_number: '3.12'
+repo_name: henryk-analysis
+testing_framework: pytest
