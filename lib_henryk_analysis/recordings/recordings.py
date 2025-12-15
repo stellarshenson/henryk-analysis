@@ -286,7 +286,7 @@ def plot_recordings_stats(df: pd.DataFrame) -> None:
 
     axs[0].set_title(
         f"Recordings duration from {date_min.date()} to {date_max.date()}\n"
-        f"Total: {total_duration_h:,.0f} hours ({total_duration_d:,.0f} days and {total_duration_d_h:.0f} hours)"
+        f"Total: {total_duration_h:,.0f} hours ({total_duration_d:,.0f} days and {total_duration_d_h:.0f} hours), {len(df)} recordings"
     )
     axs[0].grid(axis="y")
     axs[0].set_ylabel("Duration (minutes)")
