@@ -1,4 +1,8 @@
+<<<<<<< before updating
 # Henry Project "Hope" - AI Analysis and Generation
+=======
+# copier._main.new_copy.g7dqesnn
+>>>>>>> after updating
 
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />

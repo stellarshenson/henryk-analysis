@@ -1,4 +1,4 @@
-.PHONY: clean data lint format requirements upgrade build sync_data_up sync_data_down sync_models_up sync_models_down test docs docs_serve
+.PHONY: clean data lint format requirements upgrade build sync_data_up sync_data_down sync_models_up sync_models_down test docs docs_serve register_environment
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -142,6 +142,21 @@ remove_environment:
 	@-rm -rf ~/.local/share/jupyter/kernels/$(ENV_NAME) 2>/dev/null || true
 	@rm -rf $(PROJECT_DIR)/.venv
 	@echo "$(OK_STYLE)>>> Environment removed$(NO_STYLE)"
+## Register Jupyter kernel for the environment
+register_environment:
+	@if [ ! -d "$(PROJECT_DIR)/.venv" ]; then \
+		echo "$(ERR_PREFIX) $(ERR_STYLE)ERROR: uv virtual environment not found at .venv. Run 'make create_environment' first$(NO_STYLE)"; \
+		exit 1; \
+	fi
+	@if command -v nb_venv_kernels >/dev/null 2>&1; then \
+		echo "$(MSG_PREFIX) registering Jupyter kernel for $(HIGHLIGHT_STYLE)$(ENV_NAME)$(NO_STYLE)"; \
+		nb_venv_kernels register --name $(ENV_NAME) $(PROJECT_DIR)/.venv >/dev/null 2>&1; \
+		echo "$(OK_STYLE)>>> Kernel registered successfully$(NO_STYLE)"; \
+	else \
+		echo "$(MSG_PREFIX) registering Jupyter kernel with ipykernel"; \
+		$(PROJECT_DIR)/.venv/bin/python -m ipykernel install --user --name=$(ENV_NAME) --display-name "Python [uv env:$(ENV_NAME)]"; \
+		echo "$(OK_STYLE)>>> Kernel registered as $(ENV_NAME)$(NO_STYLE)"; \
+	fi
 
 ## Install src modules (editable)
 install: create_environment requirements clean .env
