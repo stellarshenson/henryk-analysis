@@ -212,8 +212,46 @@ def analyze_and_print_gaps(df: pd.DataFrame, min_gap_days: int = 1) -> None:
         print("No temporal discontinuities detected. Data integrity confirmed.")
 
 
-def plot_recordings_stats(df: pd.DataFrame) -> None:
-    """Plot recording statistics with duration and weekly counts."""
+def plot_recordings_stats(df: pd.DataFrame, language: str = "en") -> None:
+    """Plot recording statistics with duration and weekly counts.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame with recording statistics (must have 'date', 'duration' columns)
+    language : str
+        Language for plot labels: "en" (English, default) or "pl" (Polish)
+    """
+    # Language translations
+    texts = {
+        "en": {
+            "title_duration": "Recordings duration from {date_min} to {date_max}",
+            "title_total": "Total: {hours:,.0f} hours ({days:,.0f} days and {hours_rem:.0f} hours), {count} recordings",
+            "title_weekly": "Weekly recording count over {weeks} weeks",
+            "ylabel_duration": "Duration (minutes)",
+            "ylabel_weekly": "Recordings per week",
+            "xlabel_date": "Date",
+            "xlabel_week": "Week",
+            "legend_years": "Years",
+        },
+        "pl": {
+            "title_duration": "Czas trwania nagrań od {date_min} do {date_max}",
+            "title_total": "Razem: {hours:,.0f} godzin ({days:,.0f} dni i {hours_rem:.0f} godzin), {count} nagrań",
+            "title_weekly": "Tygodniowa liczba nagrań przez {weeks} tygodni",
+            "ylabel_duration": "Czas trwania (minuty)",
+            "ylabel_weekly": "Nagrań na tydzień",
+            "xlabel_date": "Data",
+            "xlabel_week": "Tydzień",
+            "legend_years": "Lata",
+        },
+    }
+
+    if language not in texts:
+        logger.warning(f"Unknown language '{language}', falling back to 'en'")
+        language = "en"
+
+    t = texts[language]
+
     # STAGE 1 - analyse the stats
     total_duration_s = df["duration"].sum()
     total_duration_h = total_duration_s / 3600
@@ -285,12 +323,12 @@ def plot_recordings_stats(df: pd.DataFrame) -> None:
         )
 
     axs[0].set_title(
-        f"Recordings duration from {date_min.date()} to {date_max.date()}\n"
-        f"Total: {total_duration_h:,.0f} hours ({total_duration_d:,.0f} days and {total_duration_d_h:.0f} hours), {len(df)} recordings"
+        t["title_duration"].format(date_min=date_min.date(), date_max=date_max.date()) + "\n" +
+        t["title_total"].format(hours=total_duration_h, days=total_duration_d, hours_rem=total_duration_d_h, count=len(df))
     )
     axs[0].grid(axis="y")
-    axs[0].set_ylabel("Duration (minutes)")
-    axs[0].set_xlabel("Date")
+    axs[0].set_ylabel(t["ylabel_duration"])
+    axs[0].set_xlabel(t["xlabel_date"])
     axs[0].set_xlim((date_min, date_max))
     axs[0].set_ylim(bottom=0)
     axs[0].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=14, maxticks=22))
@@ -300,7 +338,7 @@ def plot_recordings_stats(df: pd.DataFrame) -> None:
         Line2D([0], [0], color=year_colors.get(year, "black"), lw=4, label=str(year))
         for year in years
     ]
-    axs[0].legend(handles=legend_elements, loc="lower right", title="Years")
+    axs[0].legend(handles=legend_elements, loc="lower right", title=t["legend_years"])
 
     # SECOND PLOT: Weekly count data colored by year
     df_count_by_week["year"] = df_count_by_week.index.year
@@ -330,10 +368,10 @@ def plot_recordings_stats(df: pd.DataFrame) -> None:
                 linewidth=0.5,
             )
 
-    axs[1].set_title(f"Weekly recording count over {len(df_count_by_week)} weeks")
+    axs[1].set_title(t["title_weekly"].format(weeks=len(df_count_by_week)))
     axs[1].grid(axis="y")
-    axs[1].set_ylabel("Recordings per week")
-    axs[1].set_xlabel("Week")
+    axs[1].set_ylabel(t["ylabel_weekly"])
+    axs[1].set_xlabel(t["xlabel_week"])
 
     left_limit = mdates.date2num(min_date) - half_width_days
     right_limit = mdates.date2num(max_date) + half_width_days
@@ -343,7 +381,7 @@ def plot_recordings_stats(df: pd.DataFrame) -> None:
     axs[1].xaxis.set_major_locator(mdates.AutoDateLocator(minticks=14, maxticks=22))
     axs[1].tick_params(axis="x", labelrotation=45, labelsize=8)
 
-    axs[1].legend(handles=legend_elements, loc="lower right", title="Years")
+    axs[1].legend(handles=legend_elements, loc="lower right", title=t["legend_years"])
     axs[1].autoscale(enable=False)
 
     plt.rcParams["axes.xmargin"] = 0

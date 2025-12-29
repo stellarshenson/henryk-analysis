@@ -1,7 +1,11 @@
 <<<<<<< before updating
+<<<<<<< before updating
 # Henry Project "Hope" - AI Analysis and Generation
 =======
 # copier._main.new_copy.g7dqesnn
+>>>>>>> after updating
+=======
+# copier._main.new_copy.daorxah1
 >>>>>>> after updating
 
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
