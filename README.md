@@ -13,7 +13,7 @@ I am a loving father to my 4.5-year-old son, Henry, who has been alienated from 
 
 ![Father's recordings for son](./.resources/father_recordings_for_son4.WEBP)
 
-This project also serves a therapeutic purpose for me. As I wait for the court system to take action, I must deal with the aggressive patterns of Parental Alienation. Although it is difficult, I am resilient. I have the support of a therapist and a circle of friends. However, my son doesn't have that kind of support system and he is and noone to turn to. I cannot imagine what he is going through, being only 3 years old and subjected to separation and constant attempts to isolate him from his father.
+This project also serves a therapeutic purpose for me. As I wait for the court system to take action, I must deal with the aggressive patterns of Parental Alienation. Although it is difficult, I am resilient. I have the support of a therapist and a circle of friends. However, my son doesn't have that kind of support system and he is and noone to turn to. I cannot imagine what he is going through, being so young and having no voice in all of this, subjected to separation and constant attempts to isolate him from his father.
 
 ![Father and son alienated](./.resources/father_and_son_alienated4.webp)
 
