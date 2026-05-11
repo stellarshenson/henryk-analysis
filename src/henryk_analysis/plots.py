@@ -3,16 +3,15 @@ Visualization utilities for henryk analysis project.
 
 Provides functions for plotting histograms, word clouds, and categorical data.
 """
+
 import json
 from pathlib import Path
 
+from loguru import logger
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from loguru import logger
 from wordcloud import WordCloud
-
-from henryk_analysis.config import FIGURES_DIR, PROCESSED_DATA_DIR, RESOURCES_DIR
 
 
 def load_mappings(mapping_file: str | Path) -> dict:
@@ -154,9 +153,7 @@ def plot_categorical_histogram(
     plt.rcParams["axes.facecolor"] = "white"
     plt.rcParams["figure.facecolor"] = "white"
 
-    ax = sns.countplot(
-        data=df, y=column, palette=palette, order=df[column].value_counts().index
-    )
+    ax = sns.countplot(data=df, y=column, palette=palette, order=df[column].value_counts().index)
 
     total = len(df[column])
     for p in ax.patches:
@@ -271,7 +268,7 @@ def plot_binary_columns_histogram(
         ax.text(
             row["Count"] + 0.5,
             index,
-            f'{row["Percentage"]:.1f}%\n{row["Count"]:.0f}',
+            f"{row['Percentage']:.1f}%\n{row['Count']:.0f}",
             color="black",
             va="center",
             fontsize=12,

@@ -3,9 +3,10 @@ Configuration for the henryk analysis project.
 
 Provides path constants and environment setup.
 """
+
 import os
-import sys
 from pathlib import Path
+import sys
 
 from dotenv import load_dotenv
 from loguru import logger
@@ -50,16 +51,26 @@ FILE_RECORDINGS_STATS_PARQUET = Path(
     os.getenv("FILE_RECORDINGS_STATS", PROCESSED_DATA_DIR / "henryk_recordings_stats.parquet")
 )
 FILE_TRANSCRIPTIONS_PARQUET = Path(
-    os.getenv("FILE_TRANSCRIPTIONS", PROCESSED_DATA_DIR / "henryk_recordings_transcriptions.parquet")
+    os.getenv(
+        "FILE_TRANSCRIPTIONS", PROCESSED_DATA_DIR / "henryk_recordings_transcriptions.parquet"
+    )
 )
 FILE_TRANSCRIPTIONS_JSON = Path(
-    os.getenv("FILE_TRANSCRIPTIONS_JSON", PROCESSED_DATA_DIR / "henryk_recordings_transcriptions.json")
+    os.getenv(
+        "FILE_TRANSCRIPTIONS_JSON", PROCESSED_DATA_DIR / "henryk_recordings_transcriptions.json"
+    )
 )
 FILE_TRANSCRIPTIONS_CLASSIFICATIONS_PARQUET = Path(
-    os.getenv("FILE_CLASSIFICATIONS", PROCESSED_DATA_DIR / "henryk_transcriptions_classifications.parquet")
+    os.getenv(
+        "FILE_CLASSIFICATIONS",
+        PROCESSED_DATA_DIR / "henryk_transcriptions_classifications.parquet",
+    )
 )
 FILE_TRANSCRIPTIONS_CLASSIFICATIONS_STATS_PARQUET = Path(
-    os.getenv("FILE_CLASSIFICATIONS_STATS", PROCESSED_DATA_DIR / "henryk_transcriptions_classifications_stats.parquet")
+    os.getenv(
+        "FILE_CLASSIFICATIONS_STATS",
+        PROCESSED_DATA_DIR / "henryk_transcriptions_classifications_stats.parquet",
+    )
 )
 
 # Template and prompt files (from environment or defaults)

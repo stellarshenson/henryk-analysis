@@ -3,6 +3,7 @@
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
+[![Build](https://github.com/stellarshenson/henryk-analysis/actions/workflows/build.yml/badge.svg)](https://github.com/stellarshenson/henryk-analysis/actions/workflows/build.yml)
 
 ## Purpose
 

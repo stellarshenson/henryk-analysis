@@ -3,16 +3,17 @@ Logging utilities for the henryk analysis project.
 
 Provides colored console output, progress bars, and notebook cell control.
 """
+
 import sys
 
 from colorama import Back, Fore, Style
 from loguru import logger
 
-
 # Configure loguru with tqdm-compatible output
 logger.remove()
 try:
     from tqdm import tqdm
+
     logger.add(lambda msg: tqdm.write(msg, end="", file=sys.stdout), colorize=True)
 except ModuleNotFoundError:
     logger.add(sys.stdout, colorize=True)

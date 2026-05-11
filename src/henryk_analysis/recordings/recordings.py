@@ -1,18 +1,19 @@
 """
 Performs retrieval of the recordings and their stats.
 """
-import os
-import re
+
 from datetime import datetime, timedelta
 from glob import glob
+import os
 from pathlib import Path
+import re
 
 import matplotlib.dates as mdates
+from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
+from mutagen import File as MutagenFile
 import numpy as np
 import pandas as pd
-from matplotlib.lines import Line2D
-from mutagen import File as MutagenFile
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
 from henryk_analysis import utils
@@ -81,7 +82,7 @@ def get_recordings_info(path_recordings: str | Path) -> pd.DataFrame:
         TextColumn("({task.completed}/{task.total})"),
         TimeElapsedColumn(),
     ) as progress:
-        task = progress.add_task(f"Processing audio files", total=len(files_m4a))
+        task = progress.add_task("Processing audio files", total=len(files_m4a))
         for f in files_m4a:
             audio_recording_info = get_audio_file_info(recording_file_path=f)
             if audio_recording_info is not None:
@@ -108,9 +109,7 @@ def get_audio_file_info(recording_file_path: str) -> dict | None:
             return None
 
         _filename = os.path.basename(recording_file_path)
-        _filename_regex_groups = re.search(
-            r"^(.+) (\d+-\d+-\d+) (.+)\.(.+)$", _filename
-        )
+        _filename_regex_groups = re.search(r"^(.+) (\d+-\d+-\d+) (.+)\.(.+)$", _filename)
 
         if _filename_regex_groups is None:
             logger.warning(f"filename does not match expected pattern: {_filename}")
@@ -272,9 +271,7 @@ def plot_recordings_stats(df: pd.DataFrame, language: str = "en") -> None:
 
     # Count by week
     df_count_by_week = df.copy()
-    df_count_by_week["week"] = (
-        df["date"].dt.strftime("%Y") + "-" + df["date"].dt.strftime("%W")
-    )
+    df_count_by_week["week"] = df["date"].dt.strftime("%Y") + "-" + df["date"].dt.strftime("%W")
     df_count_by_week = df_count_by_week.groupby("week").agg({"date": ["min"], "name": ["count"]})
     df_count_by_week = (
         df_count_by_week.droplevel(axis=1, level=1)
@@ -323,8 +320,14 @@ def plot_recordings_stats(df: pd.DataFrame, language: str = "en") -> None:
         )
 
     axs[0].set_title(
-        t["title_duration"].format(date_min=date_min.date(), date_max=date_max.date()) + "\n" +
-        t["title_total"].format(hours=total_duration_h, days=total_duration_d, hours_rem=total_duration_d_h, count=len(df))
+        t["title_duration"].format(date_min=date_min.date(), date_max=date_max.date())
+        + "\n"
+        + t["title_total"].format(
+            hours=total_duration_h,
+            days=total_duration_d,
+            hours_rem=total_duration_d_h,
+            count=len(df),
+        )
     )
     axs[0].grid(axis="y")
     axs[0].set_ylabel(t["ylabel_duration"])

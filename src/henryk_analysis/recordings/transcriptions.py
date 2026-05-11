@@ -1,12 +1,13 @@
 """
 Transcription processing for recordings.
 """
+
+from glob import glob
 import json
 import os
 import pathlib
 import shutil
 import subprocess
-from glob import glob
 
 import docx
 import pandas as pd
@@ -18,7 +19,7 @@ from henryk_analysis.config import (
     FILE_TRANSCRIPTION_TEMPLATE,
     FILE_TRANSCRIPTIONS_PARQUET,
 )
-from henryk_analysis.logger import coloured_print, logger, progressBar
+from henryk_analysis.logger import coloured_print, progressBar
 from henryk_analysis.recordings import recordings
 
 
@@ -180,12 +181,12 @@ def retrieve_responses_goodtape_via_webhooks(
         f"https://webhook.site/token/{webhooks_token_id}/requests?sorting=newest",
         headers={},
     )
-    print(f'found {len(r.json()["data"])} requests to fetch')
+    print(f"found {len(r.json()['data'])} requests to fetch")
 
     counter = 0
     for i, request in enumerate(r.json()["data"]):
         response = requests.get(
-            f'https://webhook.site/token/{webhooks_token_id}/request/{request["uuid"]}/raw'
+            f"https://webhook.site/token/{webhooks_token_id}/request/{request['uuid']}/raw"
         )
         transcription_json = response.json()
         transcription_id = transcription_json["transcription_id"]
@@ -212,7 +213,7 @@ def retrieve_responses_goodtape_via_webhooks(
         counter += 1
 
         requests.delete(
-            f'https://webhook.site/token/{webhooks_token_id}/request/{request["uuid"]}'
+            f"https://webhook.site/token/{webhooks_token_id}/request/{request['uuid']}"
         )
 
     print(f"{counter} transcriptions were retrieved")

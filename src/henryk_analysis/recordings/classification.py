@@ -1,16 +1,17 @@
 """
 Transcription classification using OpenAI's GPT models.
 """
+
 import json
 import pathlib
 import time
 
-import openai
-import pandas as pd
 from json_repair import repair_json
 from markdown_it import MarkdownIt
 from mdit_plain.renderer import RendererPlain
 from names_generator import generate_name
+import openai
+import pandas as pd
 
 from henryk_analysis import utils
 from henryk_analysis.config import (
@@ -61,9 +62,9 @@ class TranscriptionClassifier:
         self.client = openai.OpenAI(api_key=api_key)
 
         if df_transcriptions_classifications is not None:
-            self.df_transcriptions_classifications = (
-                df_transcriptions_classifications.reset_index(drop=True).copy()
-            )
+            self.df_transcriptions_classifications = df_transcriptions_classifications.reset_index(
+                drop=True
+            ).copy()
         else:
             self.df_transcriptions_classifications = pd.DataFrame(
                 {"name": [], "classification_json": []}
@@ -141,15 +142,15 @@ class TranscriptionClassifier:
         )
 
         if df_transcriptions_classifications is not None and self._in_progress is False:
-            self.df_transcriptions_classifications = (
-                df_transcriptions_classifications.reset_index(drop=True).copy()
-            )
+            self.df_transcriptions_classifications = df_transcriptions_classifications.reset_index(
+                drop=True
+            ).copy()
 
             stats = self._get_completed_vs_requested_stats(
                 df_transcriptions, self.df_transcriptions_classifications
             )
             logger.info(
-                f'found {stats["num_completed"]} ({stats["num_requested_completed"]} '
+                f"found {stats['num_completed']} ({stats['num_requested_completed']} "
                 f"from current request) existing classifications, those will not be processed."
             )
         elif df_transcriptions_classifications is not None and self._in_progress is True:
@@ -170,7 +171,7 @@ class TranscriptionClassifier:
                 df_transcriptions, self.df_transcriptions_classifications
             )
             progress_bar_prefix = (
-                f'classifying {stats["num_requested_completed"]:3}/{stats["num_requested"]} '
+                f"classifying {stats['num_requested_completed']:3}/{stats['num_requested']} "
                 f"transcriptions"
             )
 
@@ -194,7 +195,7 @@ class TranscriptionClassifier:
                         i,
                         len(df_transcriptions),
                         prefix=progress_bar_prefix,
-                        suffix=f'{"*** COOLDOWN ***":72}',
+                        suffix=f"{'*** COOLDOWN ***':72}",
                         length=40,
                     )
                 time.sleep(cooldown_seconds)
@@ -231,7 +232,7 @@ class TranscriptionClassifier:
                             i,
                             len(df_transcriptions),
                             prefix=progress_bar_prefix,
-                            suffix=f'{"*** RETRY ["}{retry_count}{"] ***":54}',
+                            suffix=f"{'*** RETRY ['}{retry_count}{'] ***':54}",
                             length=40,
                         )
                     time.sleep(cooldown_seconds)
@@ -244,7 +245,7 @@ class TranscriptionClassifier:
             1,
             1,
             prefix=f"classifying {len(df_transcriptions)} transcriptions",
-            suffix=f'{"done.":72}',
+            suffix=f"{'done.':72}",
             length=40,
         )
 
@@ -255,19 +256,19 @@ class TranscriptionClassifier:
         if stats["num_requested_completed"] == stats["num_requested"]:
             if stats["num_completed"] > stats["num_requested"]:
                 logger.info(
-                    f'more ({stats["num_completed"]}) classifications than requested, '
+                    f"more ({stats['num_completed']}) classifications than requested, "
                     f"classifier was executed before on different dataset"
                 )
             logger.info(
                 coloured_text(
-                    f'*** all {stats["num_requested"]} requested transcriptions '
+                    f"*** all {stats['num_requested']} requested transcriptions "
                     f"classifications were completed ***",
                     "green",
                 )
             )
         else:
             logger.info(
-                f'there are still {stats["num_remaining"]} missing requested classifications'
+                f"there are still {stats['num_remaining']} missing requested classifications"
             )
 
     def _get_completed_vs_requested_stats(
@@ -358,7 +359,9 @@ class TranscriptionClassifier:
 
         if path.is_file():
             df_old = pd.read_parquet(path)
-            logger.info("found older file with the same name, checking the older file size vs new...")
+            logger.info(
+                "found older file with the same name, checking the older file size vs new..."
+            )
 
             if len(df_old) > len(self.df_transcriptions_classifications):
                 logger.warning(

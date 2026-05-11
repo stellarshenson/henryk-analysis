@@ -3,19 +3,18 @@ Dataset generation and loading utilities for henryk analysis project.
 
 Provides functions for loading and processing recordings data.
 """
+
 from pathlib import Path
 
+from loguru import logger
 import pandas as pd
 import typer
-from loguru import logger
 
 from henryk_analysis.config import (
     DIR_RECORDINGS,
     FILE_RECORDINGS_STATS_PARQUET,
     FILE_TRANSCRIPTIONS_CLASSIFICATIONS_PARQUET,
     FILE_TRANSCRIPTIONS_PARQUET,
-    PROCESSED_DATA_DIR,
-    RAW_DATA_DIR,
 )
 
 app = typer.Typer()
