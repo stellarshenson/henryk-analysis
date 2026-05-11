@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lib_henryk_analysis"
-version = "0.1.0"
+version = "0.6.84"
 description = "Project dedicated to the analysis and processing of various content related to my son and him being alienaded from me (his father). This is a Hope project, to help me win my son back and help us maintain connection"
 authors = [
     { name = "Konrad Jelen" },

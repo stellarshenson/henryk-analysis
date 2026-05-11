@@ -17,7 +17,7 @@ from lib_henryk_analysis.config import (
     RESOURCES_DIR,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.6.84"
 
 __all__ = [
     "config",
