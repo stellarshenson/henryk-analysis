@@ -32,7 +32,7 @@ except ModuleNotFoundError:
 load_dotenv()
 
 # Project root (derived from module location)
-PROJ_ROOT = Path(__file__).resolve().parents[1]
+PROJ_ROOT = Path(__file__).resolve().parents[2]
 
 # Project directories (from environment or defaults relative to PROJ_ROOT)
 DATA_DIR = Path(os.getenv("DATA_DIR", PROJ_ROOT / "data"))

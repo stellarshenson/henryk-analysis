@@ -32,7 +32,7 @@ The following workspace rules are STRICTLY ENFORCED for this project:
 **Project**: Henry Project "Hope" - AI Analysis and Generation
 **Purpose**: Process 700+ audio recordings (approximately 200 hours) made for an alienated son, Henry. Extract information, generate transcriptions, classifications, and prepare content for delivery through various channels.
 
-**Library**: `lib_henryk_analysis` (v0.1.0)
+**Library**: `henryk_analysis` (v0.1.0)
 **Conda Environment**: `henryk`
 **Python Version**: 3.12
 
@@ -40,7 +40,7 @@ The following workspace rules are STRICTLY ENFORCED for this project:
 
 ```
 henryk-analysis/
-├── lib_henryk_analysis/     # Main library
+├── henryk_analysis/     # Main library
 │   ├── recordings/          # Recording processing (transcriptions, classification)
 │   │   ├── recordings.py    # File discovery, metadata extraction, plotting
 │   │   ├── transcriptions.py # Transcription processing via GoodTape API
@@ -112,14 +112,14 @@ pip install -e ".[dev]"
 
 ```python
 # Import the library
-import lib_henryk_analysis as hk
-from lib_henryk_analysis.config import PROCESSED_DATA_DIR, PROJ_ROOT
-from lib_henryk_analysis.logger import logger, progress_bar, coloured_print
+import henryk_analysis as hk
+from henryk_analysis.config import PROCESSED_DATA_DIR, PROJ_ROOT
+from henryk_analysis.logger import logger, progress_bar, coloured_print
 
 # Import recordings submodules
-from lib_henryk_analysis.recordings import recordings
-from lib_henryk_analysis.recordings import transcriptions
-from lib_henryk_analysis.recordings.classification import TranscriptionClassifier
+from henryk_analysis.recordings import recordings
+from henryk_analysis.recordings import transcriptions
+from henryk_analysis.recordings.classification import TranscriptionClassifier
 ```
 
 ## Sensitive Content Notes

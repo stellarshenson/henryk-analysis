@@ -9,7 +9,7 @@ import pandas as pd
 import typer
 from loguru import logger
 
-from lib_henryk_analysis.config import (
+from henryk_analysis.config import (
     DIR_RECORDINGS,
     FILE_RECORDINGS_STATS_PARQUET,
     FILE_TRANSCRIPTIONS_CLASSIFICATIONS_PARQUET,
@@ -134,7 +134,7 @@ def generate_stats(
     output_path : Path
         Output path for parquet file.
     """
-    from lib_henryk_analysis.recordings import recordings
+    from henryk_analysis.recordings import recordings
 
     logger.info(f"Generating recordings stats from {input_path}")
     df = recordings.get_recordings_info(input_path)

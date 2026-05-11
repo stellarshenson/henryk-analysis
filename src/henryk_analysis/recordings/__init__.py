@@ -6,7 +6,7 @@ Provides functionality for:
 - Transcription processing
 - Classification via OpenAI
 """
-from lib_henryk_analysis.recordings.recordings import (
+from henryk_analysis.recordings.recordings import (
     analyze_and_print_gaps,
     get_audio_file_info,
     get_recordings_files_list,

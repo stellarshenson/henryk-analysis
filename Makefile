@@ -1,4 +1,4 @@
-.PHONY: clean data lint format requirements upgrade build sync_data_up sync_data_down sync_models_up sync_models_down test docs docs_serve register_environment
+.PHONY: clean data lint format requirements upgrade build sync_data_up sync_data_down sync_models_up sync_models_down test docs docs_serve register_environment preflight
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -6,7 +6,7 @@
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROJECT_NAME = henryk-analysis
-MODULE_NAME = lib_henryk_analysis
+MODULE_NAME = henryk_analysis
 PYTHON_VERSION = 3.12
 PYTHON_INTERPRETER = python
 
@@ -31,6 +31,7 @@ NO_STYLE = \033[0m
 ENV_NAME = henryk
 # uv configuration
 VENV_PATH = $(PROJECT_DIR)/.venv
+UV_OPTS =
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -39,12 +40,12 @@ VENV_PATH = $(PROJECT_DIR)/.venv
 .PHONY: requirements
 requirements:
 	@echo "$(MSG_PREFIX) installing requirements with uv"
-	uv sync --python $(PROJECT_DIR)/.venv --extra dev
+	uv $(UV_OPTS) sync --python $(PROJECT_DIR)/.venv --extra dev
 ## Upgrade Python dependencies to latest versions
 .PHONY: upgrade
 upgrade:
 	@echo "$(MSG_PREFIX) upgrading packages with uv"
-	uv sync --python $(PROJECT_DIR)/.venv --extra dev --upgrade
+	uv $(UV_OPTS) sync --python $(PROJECT_DIR)/.venv --extra dev --upgrade
 
 ## Delete all compiled Python files
 clean:
@@ -76,14 +77,14 @@ clean:
 ## Lint using ruff (use `make format` to do formatting)
 lint:
 	@echo "$(MSG_PREFIX) linting the sourcecode"
-	ruff format --check
-	ruff check
+	uvx ruff format --check
+	uvx ruff check
 
 ## Format source code with ruff
 format:
 	@echo "$(MSG_PREFIX) formatting the sourcecode"
-	ruff check --fix
-	ruff format
+	uvx ruff check --fix
+	uvx ruff format
 ## Run tests
 test:
 	@echo "$(MSG_PREFIX) checking for tests"
@@ -107,18 +108,30 @@ docs_serve:
 # UV ENVIRONMENT MANAGEMENT                                                     #
 #################################################################################
 
+## Preflight check for required tools
+preflight:
+	@if ! command -v $(PYTHON_INTERPRETER) >/dev/null 2>&1; then \
+		echo "$(ERR_PREFIX) $(ERR_STYLE)ERROR: $(PYTHON_INTERPRETER) not found$(NO_STYLE)"; \
+		echo "$(ERR_PREFIX) $(ERR_STYLE)install Python from https://www.python.org/downloads/$(NO_STYLE)"; \
+		exit 1; \
+	fi
+
 ## Set up Python interpreter environment
-create_environment:
+create_environment: preflight
 	@if [ -d "$(PROJECT_DIR)/.venv" ]; then \
 		echo "$(MSG_PREFIX) virtual environment already exists at $(HIGHLIGHT_STYLE).venv$(NO_STYLE). Skipping creation."; \
 	else \
+		if ! command -v uv >/dev/null 2>&1; then \
+			echo "$(MSG_PREFIX) installing uv"; \
+			pip install -q uv; \
+		fi; \
 		echo "$(MSG_PREFIX) creating uv virtual environment"; \
-		uv venv -q --python $(PYTHON_VERSION); \
+		uv $(UV_OPTS) venv -q --python $(PYTHON_VERSION); \
 		echo "$(MSG_PREFIX) new uv virtual environment created. Activate with:"; \
 		echo "$(MSG_PREFIX) Windows: $(HIGHLIGHT_STYLE).\\\.venv\\\Scripts\\\activate$(NO_STYLE)"; \
 		echo "$(MSG_PREFIX) Unix/macOS: $(HIGHLIGHT_STYLE)source ./.venv/bin/activate$(NO_STYLE)"; \
 		echo "$(MSG_PREFIX) installing dependencies"; \
-		uv pip install -q --python $(PROJECT_DIR)/.venv -e ".[dev]"; \
+		uv $(UV_OPTS) pip install -q --python $(PROJECT_DIR)/.venv -e ".[dev]"; \
 		if command -v nb_venv_kernels >/dev/null 2>&1; then \
 			echo "$(MSG_PREFIX) registering Jupyter kernel for $(HIGHLIGHT_STYLE)$(ENV_NAME)$(NO_STYLE)"; \
 			nb_venv_kernels register --name $(ENV_NAME) $(PROJECT_DIR)/.venv >/dev/null 2>&1; \
@@ -162,18 +175,18 @@ register_environment:
 install: create_environment requirements clean .env
 
 	@echo "$(MSG_PREFIX) installing $(MODULE_NAME) in editable mode"
-	@uv pip install -q --python $(PROJECT_DIR)/.venv -e .
+	@uv $(UV_OPTS) pip install -q --python $(PROJECT_DIR)/.venv -e .
 	@echo "$(OK_STYLE)>>> $(MODULE_NAME) installed$(NO_STYLE)"
 
 ## Build package
-build: clean install test increment_build_number
+build: clean install test increment_version_number
 	@echo "$(MSG_PREFIX) building $(MODULE_NAME)"
 	$(PROJECT_DIR)/.venv/bin/python -m build --wheel
 
 ## Increment build number
-increment_build_number:
+increment_version_number:
 	@echo "$(MSG_PREFIX) incrementing build number"
-	@$(PROJECT_DIR)/.venv/bin/python -c "import toml; data=toml.load('pyproject.toml'); ver=data['project']['version'].split('.'); ver[-1]=str(int(ver[-1])+1); data['project']['version']='.'.join(ver); f=open('pyproject.toml','w'); toml.dump(data,f); f.close(); print('New version:',data['project']['version'])"
+	@$(PROJECT_DIR)/.venv/bin/python -c "import re; c=open('pyproject.toml').read(); m=re.search(r'version = \"(\\d+)\\.(\\d+)\\.(\\d+)\"',c); v=f'{m[1]}.{m[2]}.{int(m[3])+1}'; c=re.sub(r'version = \"\\d+\\.\\d+\\.\\d+\"',f'version = \"{v}\"',c,count=1); open('pyproject.toml','w').write(c); print('New version:',v)"
 
 #################################################################################
 # PROJECT RULES                                                                 #
@@ -181,7 +194,7 @@ increment_build_number:
 ## Make dataset
 data: requirements
 	@echo "$(MSG_PREFIX) generating dataset"
-	$(PYTHON_INTERPRETER) lib_henryk_analysis/dataset.py
+	$(PYTHON_INTERPRETER) src/henryk_analysis/dataset.py
 
 #################################################################################
 # Self Documenting Commands                                                     #

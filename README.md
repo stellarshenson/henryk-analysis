@@ -112,7 +112,7 @@ You can also use a prebuilt environment available as a Docker-compose project: [
 ├── reports
 │   └── figures            <- Generated graphics and figures
 ├── tests                  <- Test files
-└── lib_henryk_analysis    <- Source code for this project
+└── henryk_analysis    <- Source code for this project
     ├── __init__.py
     ├── config.py          <- Configuration variables and paths
     ├── logger.py          <- Logging utilities, progress bars

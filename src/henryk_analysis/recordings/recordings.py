@@ -15,9 +15,9 @@ from matplotlib.lines import Line2D
 from mutagen import File as MutagenFile
 from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
 
-from lib_henryk_analysis import utils
-from lib_henryk_analysis.config import DIR_RECORDINGS
-from lib_henryk_analysis.logger import logger
+from henryk_analysis import utils
+from henryk_analysis.config import DIR_RECORDINGS
+from henryk_analysis.logger import logger
 
 
 def get_recordings_files_list(path_recordings: str | Path = DIR_RECORDINGS) -> list[str]:

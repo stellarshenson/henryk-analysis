@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
-_commit: v1.1.2
+_commit: v1.3.5
 _src_path: https://github.com/stellarshenson/copier-data-science.git
 author_name: Konrad Jelen
 custom_config: ''
@@ -13,11 +13,12 @@ docs: mkdocs
 env_encryption: 'Yes'
 env_name: henryk
 environment_manager: uv
-include_code_scaffold: 'Yes'
+git_init: 'Yes'
 jupyter_kernel_support: 'Yes'
 linting_and_formatting: ruff
-module_name: lib_henryk_analysis
+module_name: henryk_analysis
 open_source_license: MIT
+package_repository: 'No'
 pydata_packages: none
 python_version_number: '3.12'
 repo_name: henryk-analysis

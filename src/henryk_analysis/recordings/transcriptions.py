@@ -12,14 +12,14 @@ import docx
 import pandas as pd
 import requests
 
-from lib_henryk_analysis import utils
-from lib_henryk_analysis.config import (
+from henryk_analysis import utils
+from henryk_analysis.config import (
     DIR_RECORDINGS,
     FILE_TRANSCRIPTION_TEMPLATE,
     FILE_TRANSCRIPTIONS_PARQUET,
 )
-from lib_henryk_analysis.logger import coloured_print, logger, progressBar
-from lib_henryk_analysis.recordings import recordings
+from henryk_analysis.logger import coloured_print, logger, progressBar
+from henryk_analysis.recordings import recordings
 
 
 def init(

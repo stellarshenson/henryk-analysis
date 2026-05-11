@@ -12,12 +12,12 @@ from markdown_it import MarkdownIt
 from mdit_plain.renderer import RendererPlain
 from names_generator import generate_name
 
-from lib_henryk_analysis import utils
-from lib_henryk_analysis.config import (
+from henryk_analysis import utils
+from henryk_analysis.config import (
     FILE_PROMPT_RECORDING_CLASSIFICATION,
     FILE_TRANSCRIPTIONS_CLASSIFICATIONS_PARQUET,
 )
-from lib_henryk_analysis.logger import coloured_text, logger, progressBar
+from henryk_analysis.logger import coloured_text, logger, progressBar
 
 
 class TranscriptionClassifier:

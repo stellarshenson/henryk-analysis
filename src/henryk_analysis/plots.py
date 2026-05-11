@@ -12,7 +12,7 @@ import seaborn as sns
 from loguru import logger
 from wordcloud import WordCloud
 
-from lib_henryk_analysis.config import FIGURES_DIR, PROCESSED_DATA_DIR, RESOURCES_DIR
+from henryk_analysis.config import FIGURES_DIR, PROCESSED_DATA_DIR, RESOURCES_DIR
 
 
 def load_mappings(mapping_file: str | Path) -> dict:
