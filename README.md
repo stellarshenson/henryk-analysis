@@ -9,7 +9,7 @@ The primary goal of this project is to create a platform that allows my audio re
 
 ![Father's recordings for son](./.resources/stories_from_father_to_son.webp)
 
-I am a loving father to my 3.5-year-old son, Henry, who has been alienated from me for more than 3 years. Despite the challenging circumstances, I am determined to maintain a connection with him. This has led to a significant number of audio recordings and the development of this data science and automation project.
+I am a loving father to my 4.5-year-old son, Henry, who has been alienated from me for more than 3 years. Despite the challenging circumstances, I am determined to maintain a connection with him. This has led to a significant number of audio recordings and the development of this data science and automation project.
 
 ![Father's recordings for son](./.resources/father_recordings_for_son4.WEBP)
 
@@ -21,7 +21,7 @@ My heart aches at the thought of this, but then I focus on building. I build my 
 
 ## Project Focus
 
-This project revolves around over 700+ audio recordings (almost 200 hours) that I have made for my son, and I continue to make more. These recordings are my way of trying to connect with him and let him hear my voice. In these recordings, I share stories from my life, our family, friends, and various topics like animals, phenomena, stars, nature, and more. My hope is that one day he will discover these recordings and embark on a journey to learn about his father.
+This project revolves around over 1000+ audio recordings (over 240 hours) that I have made for my son, and I continue to make more. These recordings are my way of trying to connect with him and let him hear my voice. In these recordings, I share stories from my life, our family, friends, and various topics like animals, phenomena, stars, nature, and more. My hope is that one day he will discover these recordings and embark on a journey to learn about his father.
 
 The recordings are processed, information is extracted, and they will be delivered through various channels such as text, videos, and stories. These may eventually reach my son despite the current barriers of fear and hatred.
 

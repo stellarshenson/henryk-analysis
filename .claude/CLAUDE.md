@@ -30,9 +30,9 @@ The following workspace rules are STRICTLY ENFORCED for this project:
 ## Project Context
 
 **Project**: Henry Project "Hope" - AI Analysis and Generation
-**Purpose**: Process 700+ audio recordings (approximately 200 hours) made for an alienated son, Henry. Extract information, generate transcriptions, classifications, and prepare content for delivery through various channels.
+**Purpose**: Process over a thousand audio recordings made for an alienated son, Henry, and prepare the content for delivery through various channels.
 
-**Library**: `henryk_analysis` (v0.1.0)
+**Library**: `henryk_analysis`
 **Conda Environment**: `henryk`
 **Python Version**: 3.12
 
